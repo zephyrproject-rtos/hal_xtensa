@@ -53,7 +53,6 @@
 // 		save the extra processor state.
 //----------------------------------------------------------------------
 
-#if defined(__SPLIT__save_extra)
 
 // void xthal_save_extra(void *base)
 
@@ -63,7 +62,7 @@ SYMBOL(xthal_save_extra)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__save_extra_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // void xthal_save_extra_nw(void *base)
 
@@ -73,12 +72,12 @@ SYM(xthal_save_extra_nw)
 	ret
 	endfunc
 
+#endif /* __XTENSA_CALL0_ABI__ */
 
 //----------------------------------------------------------------------
 // 		restore the extra processor state.
 //----------------------------------------------------------------------
 
-#elif defined(__SPLIT__restore_extra)
 	
 // void xthal_restore_extra(void *base)
 
@@ -88,7 +87,7 @@ SYMBOL(xthal_restore_extra)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__restore_extra_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // void xthal_restore_extra_nw(void *base)
 
@@ -98,12 +97,12 @@ SYM(xthal_restore_extra_nw)
 	ret
 	endfunc
 
+#endif /* __XTENSA_CALL0_ABI__ */
 
 //----------------------------------------------------------------------
 // 		save the TIE COPROCESSORS state
 //----------------------------------------------------------------------
 
-#elif defined(__SPLIT__save_cpregs)
 
 // void xthal_save_cpregs(void *base, int)
 
@@ -113,56 +112,55 @@ SYMBOL(xthal_save_cpregs)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__save_cp0)
 // void xthal_save_cp0(void *base)
 SYMBOL(xthal_save_cp0)
 	abi_entry
 	xchal_cp0_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp1)
+
 // void xthal_save_cp1(void *base)
 SYMBOL(xthal_save_cp1)
 	abi_entry
 	xchal_cp1_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp2)
+
 // void xthal_save_cp2(void *base)
 SYMBOL(xthal_save_cp2)
 	abi_entry
 	xchal_cp2_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp3)
+
 // void xthal_save_cp3(void *base)
 SYMBOL(xthal_save_cp3)
 	abi_entry
 	xchal_cp3_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp4)
+
 // void xthal_save_cp4(void *base)
 SYMBOL(xthal_save_cp4)
 	abi_entry
 	xchal_cp4_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp5)
+
 // void xthal_save_cp5(void *base)
 SYMBOL(xthal_save_cp5)
 	abi_entry
 	xchal_cp5_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp6)
+
 // void xthal_save_cp6(void *base)
 SYMBOL(xthal_save_cp6)
 	abi_entry
 	xchal_cp6_store_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__save_cp7)
+
 // void xthal_save_cp7(void *base)
 SYMBOL(xthal_save_cp7)
 	abi_entry
@@ -170,7 +168,7 @@ SYMBOL(xthal_save_cp7)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__save_cpregs_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // void xthal_save_cpregs_nw(void *base, int)
 
@@ -180,56 +178,55 @@ SYM(xthal_save_cpregs_nw)
 	ret
 	endfunc
 
-#elif defined(__SPLIT__save_cp0_nw)
 // void xthal_save_cp0(void *base)
 SYM(xthal_save_cp0_nw)
 	//addi	sp, sp, 0
 	xchal_cp0_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp1_nw)
+
 // void xthal_save_cp1(void *base)
 SYM(xthal_save_cp1_nw)
 	//addi	sp, sp, 0
 	xchal_cp1_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp2_nw)
+
 // void xthal_save_cp2(void *base)
 SYM(xthal_save_cp2_nw)
 	//addi	sp, sp, 0
 	xchal_cp2_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp3_nw)
+
 // void xthal_save_cp3(void *base)
 SYM(xthal_save_cp3_nw)
 	//addi	sp, sp, 0
 	xchal_cp3_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp4_nw)
+
 // void xthal_save_cp4(void *base)
 SYM(xthal_save_cp4_nw)
 	//addi	sp, sp, 0
 	xchal_cp4_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp5_nw)
+
 // void xthal_save_cp5(void *base)
 SYM(xthal_save_cp5_nw)
 	//addi	sp, sp, 0
 	xchal_cp5_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp6_nw)
+
 // void xthal_save_cp6(void *base)
 SYM(xthal_save_cp6_nw)
 	//addi	sp, sp, 0
 	xchal_cp6_store_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__save_cp7_nw)
+
 // void xthal_save_cp7(void *base)
 SYM(xthal_save_cp7_nw)
 	//addi	sp, sp, 0
@@ -237,12 +234,12 @@ SYM(xthal_save_cp7_nw)
 	ret
 	endfunc
 
+#endif /* __XTENSA_CALL0_ABI__ */
 
 //----------------------------------------------------------------------
 // 		restore the TIE coprocessor state
 //----------------------------------------------------------------------
 
-#elif defined(__SPLIT__restore_cpregs)
 
 // void xthal_restore_cpregs(void *base, int)
 
@@ -252,56 +249,55 @@ SYMBOL(xthal_restore_cpregs)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__restore_cp0)
 // void xthal_restore_cp0(void *base)
 SYMBOL(xthal_restore_cp0)
 	abi_entry
 	xchal_cp0_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp1)
+
 // void xthal_restore_cp1(void *base)
 SYMBOL(xthal_restore_cp1)
 	abi_entry
 	xchal_cp1_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp2)
+
 // void xthal_restore_cp2(void *base)
 SYMBOL(xthal_restore_cp2)
 	abi_entry
 	xchal_cp2_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp3)
+
 // void xthal_restore_cp3(void *base)
 SYMBOL(xthal_restore_cp3)
 	abi_entry
 	xchal_cp3_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp4)
+
 // void xthal_restore_cp4(void *base)
 SYMBOL(xthal_restore_cp4)
 	abi_entry
 	xchal_cp4_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp5)
+
 // void xthal_restore_cp5(void *base)
 SYMBOL(xthal_restore_cp5)
 	abi_entry
 	xchal_cp5_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp6)
+
 // void xthal_restore_cp6(void *base)
 SYMBOL(xthal_restore_cp6)
 	abi_entry
 	xchal_cp6_load_a2
 	abi_return
 	endfunc
-#elif defined(__SPLIT__restore_cp7)
+
 // void xthal_restore_cp7(void *base)
 SYMBOL(xthal_restore_cp7)
 	abi_entry
@@ -309,7 +305,7 @@ SYMBOL(xthal_restore_cp7)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__restore_cpregs_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // void xthal_restore_cpregs_nw(void *base, int)
 
@@ -319,56 +315,55 @@ SYM(xthal_restore_cpregs_nw)
 	ret
 	endfunc
 
-#elif defined(__SPLIT__restore_cp0_nw)
 // void xthal_restore_cp0(void *base)
 SYM(xthal_restore_cp0_nw)
 	//addi	sp, sp, 0
 	xchal_cp0_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp1_nw)
+
 // void xthal_restore_cp1(void *base)
 SYM(xthal_restore_cp1_nw)
 	//addi	sp, sp, 0
 	xchal_cp1_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp2_nw)
+
 // void xthal_restore_cp2(void *base)
 SYM(xthal_restore_cp2_nw)
 	//addi	sp, sp, 0
 	xchal_cp2_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp3_nw)
+
 // void xthal_restore_cp3(void *base)
 SYM(xthal_restore_cp3_nw)
 	//addi	sp, sp, 0
 	xchal_cp3_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp4_nw)
+
 // void xthal_restore_cp4(void *base)
 SYM(xthal_restore_cp4_nw)
 	//addi	sp, sp, 0
 	xchal_cp4_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp5_nw)
+
 // void xthal_restore_cp5(void *base)
 SYM(xthal_restore_cp5_nw)
 	//addi	sp, sp, 0
 	xchal_cp5_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp6_nw)
+
 // void xthal_restore_cp6(void *base)
 SYM(xthal_restore_cp6_nw)
 	//addi	sp, sp, 0
 	xchal_cp6_load_a2
 	ret
 	endfunc
-#elif defined(__SPLIT__restore_cp7_nw)
+
 // void xthal_restore_cp7(void *base)
 SYM(xthal_restore_cp7_nw)
 	//addi	sp, sp, 0
@@ -376,7 +371,8 @@ SYM(xthal_restore_cp7_nw)
 	ret
 	endfunc
 
-#elif defined(__SPLIT__cpregs_save_fn)
+#endif /* __XTENSA_CALL0_ABI__ */
+
 	.section .rodata, "a"
 SYM(Xthal_cpregs_save_fn)
 # ifdef __XTENSA_CALL0_ABI__
@@ -393,7 +389,6 @@ SYM(Xthal_cpregs_save_nw_fn)
 	endfunc
 	.text
 
-#elif defined(__SPLIT__cpregs_save_nw_fn)
 # ifndef __XTENSA_CALL0_ABI__
 	.section .rodata, "a"
 SYM(Xthal_cpregs_save_nw_fn)
@@ -409,7 +404,6 @@ SYM(Xthal_cpregs_save_nw_fn)
 	.text
 # endif
 
-#elif defined(__SPLIT__cpregs_restore_fn)
 	.section .rodata, "a"
 SYM(Xthal_cpregs_restore_fn)
 # ifdef __XTENSA_CALL0_ABI__
@@ -426,7 +420,6 @@ SYM(Xthal_cpregs_restore_nw_fn)
 	endfunc
 	.text
 
-#elif defined(__SPLIT__cpregs_restore_nw_fn)
 # ifndef __XTENSA_CALL0_ABI__
 	.section .rodata, "a"
 SYM(Xthal_cpregs_restore_nw_fn)
@@ -447,7 +440,6 @@ SYM(Xthal_cpregs_restore_nw_fn)
 //		coprocessor enable/disable
 //----------------------------------------------------------------------
 
-#elif defined(__SPLIT__validate_cp)
 
 // validate the register file.
 // void xthal_validate_cp(int)
@@ -465,7 +457,7 @@ SYMBOL(xthal_validate_cp)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__validate_cp_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // validate the register file.
 // void xthal_validate_cp_nw(int)
@@ -483,7 +475,7 @@ SYM(xthal_validate_cp_nw)
 	ret
 	endfunc
 
-#elif defined(__SPLIT__invalidate_cp)
+#endif /* __XTENSA_CALL0_ABI__ */
 
 // invalidate the register file.
 // void xthal_invalidate_cp(int)
@@ -502,7 +494,7 @@ SYMBOL(xthal_invalidate_cp)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__invalidate_cp_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // invalidate the register file.
 // void xthal_invalidate_cp_nw(int)
@@ -521,12 +513,12 @@ SYMBOL(xthal_invalidate_cp_nw)
 	ret
 	endfunc
 
+#endif /* __XTENSA_CALL0_ABI__ */
 
 //----------------------------------------------------------------------
 //  Access the CPENABLE register
 //----------------------------------------------------------------------
 
-#elif defined(__SPLIT__get_cpenable)
 
 // unsigned xthal_get_cpenable(void);
 
@@ -540,7 +532,7 @@ SYMBOL(xthal_get_cpenable)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__get_cpenable_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // unsigned xthal_get_cpenable_nw(void);
 
@@ -554,7 +546,8 @@ SYM(xthal_get_cpenable_nw)
 	ret
 	endfunc
 
-#elif defined(__SPLIT__set_cpenable)
+#endif /* __XTENSA_CALL0_ABI__ */
+
 
 // void xthal_set_cpenable(unsigned);
 //
@@ -578,7 +571,7 @@ SYMBOL(xthal_set_cpenable)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__set_cpenable_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 // unsigned[a3] xthal_set_cpenable_nw(unsigned);
 //
@@ -599,8 +592,7 @@ SYMBOL(xthal_set_cpenable_nw)
 	ret
 	endfunc
 
-#endif
-
+#endif /* __XTENSA_CALL0_ABI__ */
 
 /*  Nothing implemented below this point.  */
 /************************************************************************/

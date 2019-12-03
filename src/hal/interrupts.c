@@ -156,22 +156,18 @@ Combined refs:
 
 
 
-#if   defined(__SPLIT__num_intlevels)
 
 // the number of interrupt levels
 const unsigned char Xthal_num_intlevels = XCHAL_NUM_INTLEVELS;
 
-#elif defined(__SPLIT__num_interrupts)
 
 // the number of interrupts
 const unsigned char Xthal_num_interrupts = XCHAL_NUM_INTERRUPTS;
 
-#elif defined(__SPLIT__excm_level)
 
 // the highest level of interrupts masked by PS.EXCM (if XEA2)
 const unsigned char Xthal_excm_level = XCHAL_EXCM_LEVEL;
 
-#elif defined(__SPLIT__intlevel_mask)
 
 // mask of interrupts at each intlevel
 const unsigned Xthal_intlevel_mask[16] = { 
@@ -179,7 +175,6 @@ const unsigned Xthal_intlevel_mask[16] = {
 };
 
 
-#elif defined(__SPLIT__intlevel_andbelow_mask)
 
 // mask for level 1 to N interrupts
 const unsigned Xthal_intlevel_andbelow_mask[16] = { 
@@ -187,7 +182,6 @@ const unsigned Xthal_intlevel_andbelow_mask[16] = {
 };
 
 
-#elif defined(__SPLIT__intlevel)
 
 // level per interrupt
 const unsigned char Xthal_intlevel[32] = { 
@@ -195,7 +189,6 @@ const unsigned char Xthal_intlevel[32] = {
 };
 
 
-#elif defined(__SPLIT__inttype)
 
 // type of each interrupt
 const unsigned char Xthal_inttype[32] = {
@@ -203,14 +196,12 @@ const unsigned char Xthal_inttype[32] = {
 };
 
 
-#elif defined(__SPLIT__inttype_mask)
 
 const unsigned Xthal_inttype_mask[XTHAL_MAX_INTTYPES] = {
     XCHAL_INTTYPE_MASKS
 };
 
 
-#elif defined(__SPLIT__timer_interrupt)
 
 // interrupts assigned to each timer (CCOMPARE0 to CCOMPARE3), -1 if unassigned
 const int Xthal_timer_interrupt[XTHAL_MAX_TIMERS] = { 
@@ -218,7 +209,6 @@ const int Xthal_timer_interrupt[XTHAL_MAX_TIMERS] = {
 };
 
 
-#elif defined(__SPLIT__vpri)
 
 #if XCHAL_HAVE_INTERRUPTS
 
@@ -392,7 +382,6 @@ XtHalVoidFunc *Xthal_tram_trigger_fn = xthal_null_func;
 #endif /* XCHAL_HAVE_INTERRUPTS */
 
 
-#elif defined(__SPLIT__vpri_to_intlevel)
 
 /*
  *  xthal_vpri_to_intlevel
@@ -409,7 +398,6 @@ unsigned xthal_vpri_to_intlevel(unsigned vpri)
 #endif
 }
 
-#elif defined(__SPLIT__intlevel_to_vpri)
 
 /*
  *  xthal_intlevel_to_vpri
@@ -426,7 +414,6 @@ unsigned xthal_intlevel_to_vpri(unsigned intlevel)
 }
 
 
-#elif defined(__SPLIT__vpri_int_enable)
 
 /*
  *  xthal_int_enable
@@ -470,7 +457,6 @@ unsigned xthal_int_enable(unsigned mask)
 #endif /* XCHAL_HAVE_INTERRUPTS */
 }
 
-#elif defined(__SPLIT__vpri_int_disable)
 
 /*
  *  xthal_int_disable
@@ -494,7 +480,6 @@ unsigned xthal_int_disable(unsigned mask)
 }
 
 
-#elif defined(__SPLIT__set_vpri_locklevel)
 
 void  xthal_set_vpri_locklevel(unsigned intlevel)
 {
@@ -508,7 +493,6 @@ void  xthal_set_vpri_locklevel(unsigned intlevel)
 #endif
 }
 
-#elif defined(__SPLIT__get_vpri_locklevel)
 
 unsigned  xthal_get_vpri_locklevel(void)
 {
@@ -520,7 +504,6 @@ unsigned  xthal_get_vpri_locklevel(void)
 }
 
 
-#elif defined(__SPLIT__set_int_vpri)
 
 /*
  *  xthal_set_int_vpri   (was intSetL1Pri)
@@ -605,7 +588,6 @@ int  xthal_set_int_vpri(int intnum, int vpri)
 } /* xthal_set_int_vpri */
 
 
-#elif defined(__SPLIT__get_int_vpri)
 
 int	xthal_get_int_vpri(int intnum)
 {
@@ -620,7 +602,6 @@ int	xthal_get_int_vpri(int intnum)
 
 
 
-#elif defined(__SPLIT__trampolines)
 
 
 	/*
@@ -800,7 +781,6 @@ void  xthal_tram_done( unsigned serviced_mask )
 #endif
 }
 
-#elif defined(__SPLIT__deprecated)
 
 
 /**********************************************************************/
@@ -821,5 +801,4 @@ const unsigned Xthal_int_type_software = XCHAL_INTTYPE_MASK_SOFTWARE;
 #endif /* INCLUDE_DEPRECATED_HAL_CODE */
 
 
-#endif /* SPLITs */
 
