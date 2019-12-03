@@ -476,7 +476,10 @@ extern void	xthal_clear_regcached_code( void );
 #define XTHAL_INTTYPE_NMI		5
 #define XTHAL_INTTYPE_WRITE_ERROR	6
 #define XTHAL_INTTYPE_PROFILING		7
-#define XTHAL_MAX_INTTYPES		8	/* number of interrupt types */
+#define XTHAL_INTTYPE_IDMA_DONE		8
+#define XTHAL_INTTYPE_IDMA_ERR		9
+#define XTHAL_INTTYPE_GS_ERR		10
+#define XTHAL_MAX_INTTYPES		11	/* number of interrupt types */
 
 /*  Timer related:  */
 #define XTHAL_TIMER_UNCONFIGURED	-1	/* Xthal_timer_interrupt[] value for non-existent timers */
