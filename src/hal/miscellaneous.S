@@ -60,7 +60,6 @@
 // System Software Reference Manual for details on the use of this function.
 //----------------------------------------------------------------------
 
-#if defined(__SPLIT__clear_regcached_code)
 
 SYMBOL(xthal_clear_regcached_code)
 	abi_entry
@@ -72,7 +71,7 @@ SYMBOL(xthal_clear_regcached_code)
 	abi_return
 	endfunc
 
-#elif defined(__SPLIT__clear_regcached_code_nw)
+#if defined (__XTENSA_CALL0_ABI__)
 
 SYM(xthal_clear_regcached_code_nw)
 # if XCHAL_HAVE_LOOPS
@@ -82,5 +81,5 @@ SYM(xthal_clear_regcached_code_nw)
 	ret
 	endfunc
 
-#endif
+#endif /* __XTENSA_CALL0_ABI__ */
 
