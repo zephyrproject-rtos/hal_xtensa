@@ -34,6 +34,7 @@
 
 /* parasoft-begin-suppress ALL "This file not MISRA checked." */
 
+#if 0
 #define XCHAL_CP_NUM			2	/* number of coprocessors */
 #define XCHAL_CP_MAX			2	/* max CP ID + 1 (0 if none) */
 #define XCHAL_CP_MASK			0x03	/* bitmask of all CPs by ID */
@@ -64,6 +65,15 @@
 #define XCHAL_CP6_SA_ALIGN		1
 #define XCHAL_CP7_SA_SIZE		0
 #define XCHAL_CP7_SA_ALIGN		1
+
+#else
+
+#define XCHAL_CP_NUM                    0	/* number of coprocessors */
+#define XCHAL_CP_MAX                    0	/* max CP ID + 1 (0 if none) */
+#define XCHAL_CP_MASK                   0x00    /* bitmask of all CPs by ID */
+#define XCHAL_CP_PORT_MASK              0x00    /* bitmask of only port CPs */
+
+#endif
 
 /*  Save area for non-coprocessor optional and custom (TIE) state:  */
 #define XCHAL_NCP_SA_SIZE		12
