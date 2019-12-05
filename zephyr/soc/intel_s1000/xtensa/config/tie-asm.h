@@ -150,6 +150,8 @@
 
 #define XCHAL_NCP_NUM_ATMPS	1
 
+#if 0
+
     /* 
      *  Macro to store the state of TIE coprocessor FPU.
      *  Required parameters:
@@ -367,5 +369,6 @@
 	.macro xchal_cp7_store	p a b c d continue=0 ofs=-1 select=-1 ; .endm
 	.macro xchal_cp7_load	p a b c d continue=0 ofs=-1 select=-1 ; .endm
 
-#endif /*_XTENSA_CORE_TIE_ASM_H*/
+#endif /* 0 */
 
+#endif /*_XTENSA_CORE_TIE_ASM_H*/
