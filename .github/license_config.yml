@@ -1,5 +1,5 @@
 license:
-  main: fsf-mit
+  main: mit
   category: Permissive
 exclude:
   extensions:
