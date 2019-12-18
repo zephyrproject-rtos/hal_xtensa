@@ -1,6 +1,6 @@
 name: Scancode
 
-on: [pull-request]
+on: [pull_request]
 
 jobs:
   scancode_job:
