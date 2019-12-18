@@ -1,0 +1,14 @@
+license:
+  main: fsf-mit
+  category: Permissive
+exclude:
+  extensions:
+    - yml
+    - yaml
+    - html
+    - rst
+    - conf
+    - cfg
+  langs:
+    - HTML
+
