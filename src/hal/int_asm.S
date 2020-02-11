@@ -1,7 +1,7 @@
 // 
 // int_asm.S - assembly language interrupt utility routines
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/int_asm.S#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/int_asm.S#1 $
 
 // Copyright (c) 2003-2010 Tensilica Inc.
 //
@@ -27,27 +27,6 @@
 #include <xtensa/coreasm.h>
 
 
-#define GBL(x)   .global x
-#define TYP(x)   .type x,@function
-#define ALN(x)   .align x
-#define SIZ(x)   .size x, . - x
-#define MKEND(x) .purgem endfunc ; .macro endfunc ; SIZ(x) ; .purgem endfunc ; .macro endfunc ; .endm ; .endm
-#define SYMT(x)  GBL(x); MKEND(x); TYP(x); ALN(4); x:
-#define SYM(x)   GBL(x); MKEND(x); ALN(4); x:
-	.macro endfunc ; .endm
-
-/* For Call0 ABI, the xthal... and xthal..._nw versions are identical,
- * so we define both labels for the same function body.  The Makefile
- * does not define any of the __SPLIT__..._nw macros if Call0 ABI.
- * Use SYM() when we don't want .type information. */
-
-#if defined (__XTENSA_CALL0_ABI__)
-# define SYMBOL(x)  SYMT(x); SYMT(x ## _nw)
-#else
-# define SYMBOL(x)  SYMT(x)
-#endif
-
-
 #if XCHAL_HAVE_INTERRUPTS
 /*  Offsets of XtHalVPriState structure members (Xthal_vpri_state variable):  */
 #define XTHAL_VPRI_VPRI_OFS		0x00
@@ -63,6 +42,8 @@
 #endif /* XCHAL_HAVE_INTERRUPTS */
 
 
+#if defined(__SPLIT__get_intenable) || \
+    defined(__SPLIT__get_intenable_nw)
 
 //----------------------------------------------------------------------
 // Access INTENABLE register from C
@@ -70,24 +51,27 @@
 
 // unsigned xthal_get_intenable(void)
 //
-SYMT(xthal_get_intenable)
+DECLFUNC(xthal_get_intenable)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
-	rsr	a2, INTENABLE
+	rsr.intenable	a2
 # else
 	movi	a2, 0	// if no INTENABLE (no interrupts), tell caller nothing is enabled
 # endif
 	abi_return
 	endfunc
 
+#endif
 
+#if defined(__SPLIT__set_intenable) || \
+    defined(__SPLIT__set_intenable_nw)
 
 // void xthal_set_intenable(unsigned)
 //
-SYMT(xthal_set_intenable)
+DECLFUNC(xthal_set_intenable)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
-	wsr	a2, INTENABLE
+	wsr.intenable	a2
 # endif
 	abi_return
 	endfunc
@@ -97,38 +81,64 @@ SYMT(xthal_set_intenable)
 // Access INTERRUPT, INTSET, INTCLEAR register from C
 //----------------------------------------------------------------------
 
+#endif
+
+#if defined(__SPLIT__get_interrupt) || \
+    defined (__SPLIT__get_interrupt_nw)
 
 // unsigned xthal_get_interrupt(void)
 //
-SYMT(xthal_get_interrupt)
-SYMT(xthal_get_intread)
+DECLFUNC (xthal_get_interrupt)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
-	rsr	a2, INTERRUPT
+	rsr.interrupt	a2
 # else
 	movi	a2, 0	// if no INTERRUPT (no interrupts), tell caller nothing is pending
 # endif
 	abi_return
 	endfunc
 
+#endif
 
-// void xthal_set_intset(unsigned)
-//
-SYMT(xthal_set_intset)
+#if defined(__SPLIT__get_intread) || \
+    defined(__SPLIT__get_intread_nw)
+
+DECLFUNC (xthal_get_intread)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
-	wsr	a2, INTSET
+	rsr.interrupt	a2
+# else
+	movi	a2, 0	// if no INTERRUPT (no interrupts), tell caller nothing is pending
 # endif
 	abi_return
 	endfunc
 
+#endif
+
+#if defined(__SPLIT__set_intset) || \
+    defined(__SPLIT__set_intset_nw)
+
+// void xthal_set_intset(unsigned)
+//
+DECLFUNC(xthal_set_intset)
+	abi_entry
+# if XCHAL_HAVE_INTERRUPTS
+	wsr.intset	a2
+# endif
+	abi_return
+	endfunc
+
+#endif
+
+#if defined(__SPLIT__set_intclear) || \
+    defined(__SPLIT__set_intclear_nw)
 
 // void xthal_set_intclear(unsigned)
 //
-SYMT(xthal_set_intclear)
+DECLFUNC(xthal_set_intclear)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
-	wsr	a2, INTCLEAR
+	wsr.intclear	a2
 # endif
 	abi_return
 	endfunc
@@ -141,11 +151,14 @@ SYMT(xthal_set_intclear)
 // using INTENABLE to simulate the masking that PS.INTLEVEL would do.
 //----------------------------------------------------------------------
 
+#endif
 
+#if defined(__SPLIT__get_vpri) ||\
+    defined(__SPLIT__get_vpri_nw)
 
 // unsigned xthal_get_vpri(void);
 
-SYMBOL(xthal_get_vpri)
+DECLFUNC(xthal_get_vpri)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
 	movi	a2, Xthal_vpri_state
@@ -156,23 +169,9 @@ SYMBOL(xthal_get_vpri)
 	abi_return
 	endfunc
 
+#endif
 
-#if defined (__XTENSA_CALL0_ABI__)
-
-// unsigned xthal_get_vpri_nw(void);
-
-SYM(xthal_get_vpri_nw)
-
-# if XCHAL_HAVE_INTERRUPTS
-	movi	a2, Xthal_vpri_state
-	l8ui	a2, a2, XTHAL_VPRI_VPRI_OFS
-# else
-	movi	a2, 0	// no interrupts, report we're always at level 0
-# endif
-	ret
-	endfunc
-
-
+#if defined(__SPLIT__set_vpri_nw)
 
 // unsigned xthal_set_vpri_nw(unsigned)
 //
@@ -194,7 +193,7 @@ SYM(xthal_get_vpri_nw)
 //	!!!!!!!!! PS.WOE = 0 (but not if there are no interrupts; is this really needed???)
 //	INTENABLE = updated according to new vpri
 
-SYM(xthal_set_vpri_nw)
+_SYM(xthal_set_vpri_nw)
 
 # if XCHAL_HAVE_INTERRUPTS
 	/*  Make sure a2 is in the range 0x0F .. 0x1F:  */
@@ -221,10 +220,10 @@ xthal_set_vpri_nw_common:
 
 	//  Clear PS.WOE.  (Can we get rid of this?!!!!!):
 	movi	a3, ~0x00040000	// mask to...
-	rsr	a5, PS		// get and save a6 = PS
+	rsr.ps	a5		// get and save a6 = PS
 //a2,a3,a4,a5,a6
 	and	a5, a5, a3	// ... clear a5.WOE
-	wsr	a5, PS		// clear PS.WOE
+	wsr.ps	a5		// clear PS.WOE
 	rsync
 
 //a2,a4,a6
@@ -234,14 +233,14 @@ xthal_set_vpri_nw_common:
 //a2,a3,a4,a5,a6
 	l32i	a3, a3, XTHAL_VPRI_ENABLEMAP_OFS	// get the per-level mask
 	and	a3, a5, a3	// new INTENABLE value according to new intlevel
-	wsr	a3, INTENABLE	// set it!
+	wsr.intenable	a3	// set it!
 //a2,a4,a6
 
 	l8ui	a5, a4, XTHAL_VPRI_VPRI_OFS	// previous virtual priority
 	s8i	a2, a4, XTHAL_VPRI_VPRI_OFS	// new virtual priority
 
 	//  Let the caller restore PS:
-	//wsr	a6, PS		// restore PS.INTLEVEL
+	//wsr.ps	a6			// restore PS.INTLEVEL
 	//rsync
 
 	mov	a2, a5		// return previous virtual intlevel
@@ -249,7 +248,7 @@ xthal_set_vpri_nw_common:
 # else /* ! XCHAL_HAVE_INTERRUPTS */
 xthal_set_vpri_nw_common:
 #  if XCHAL_HAVE_EXCEPTIONS
-	rsr	a6, PS	// return PS for caller to restore
+	rsr.ps	a6	// return PS for caller to restore
 #  else
 	movi	a6, 0
 #  endif
@@ -266,7 +265,7 @@ xthal_set_vpri_nw_common:
 //  an interrupt level rather than a virtual interrupt priority.
 //  This just converts intlevel to vpri and jumps to xthal_set_vpri_nw.
 
-SYM(xthal_set_vpri_intlevel_nw)
+_SYM(xthal_set_vpri_intlevel_nw)
 # if XCHAL_HAVE_INTERRUPTS
 	movi	a3, 0x10
 	movnez	a2, a3, a2	// a2 = (a2 ? 0x10 : 0)
@@ -275,9 +274,11 @@ SYM(xthal_set_vpri_intlevel_nw)
 	j	xthal_set_vpri_nw_common	// set vpri to a2
 	endfunc
 
-#endif /* __XTENSA_CALL0_ABI__ */
 
 
+#endif
+
+#if defined(__SPLIT__set_vpri)
 
 // unsigned  xthal_set_vpri (unsigned newvpri);
 //
@@ -293,7 +294,7 @@ SYM(xthal_set_vpri_intlevel_nw)
 //	a2 = previous vpri
 //	INTENABLE = updated according to new vpri
 
-SYMBOL(xthal_set_vpri)
+DECLFUNC(xthal_set_vpri)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
 	/*  Make sure a2 is in the range 0x0F .. 0x1F:  */
@@ -324,9 +325,9 @@ xthal_set_vpri_common1:
 	l32i	a3, a3, XTHAL_VPRI_ENABLEMAP_OFS	// get the per-level mask
 	s8i	a2, a4, XTHAL_VPRI_VPRI_OFS	// new virtual priority (in load-slot)
 	and	a3, a5, a3	// new INTENABLE value according to new intlevel
-	wsr	a3, INTENABLE	// set it!
+	wsr.intenable	a3	// set it!
 
-	wsr	a6, PS		// restore PS.INTLEVEL
+	wsr.ps	a6		// restore PS.INTLEVEL
 	rsync
 
 	mov	a2, a7		// return previous vpri
@@ -344,7 +345,7 @@ xthal_set_vpri_common1:
 //  Equivalent to xthal_set_vpri(XTHAL_VPRI(intlevel,0xF)).
 //  This just converts intlevel to vpri and jumps inside xthal_set_vpri.
 
-SYMBOL(xthal_set_vpri_intlevel)
+DECLFUNC(xthal_set_vpri_intlevel)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
 	movi	a3, 0x10
@@ -364,7 +365,7 @@ SYMBOL(xthal_set_vpri_intlevel)
 //  Equivalent to xthal_set_vpri(0x1F);
 //  Returns previous virtual interrupt priority.
 //
-SYMT(xthal_set_vpri_lock)
+DECLFUNC(xthal_set_vpri_lock)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
 	movi	a2, 0x1F		// lock at intlevel 1
@@ -376,7 +377,9 @@ SYMT(xthal_set_vpri_lock)
 	endfunc
 
 
+#endif
 
+#if defined(__SPLIT__get_intpending_nw)
 
 // unsigned xthal_get_intpending_nw(void)
 //
@@ -404,10 +407,10 @@ SYMT(xthal_set_vpri_lock)
 //		INTERRUPT bit cleared for interrupt returned in a2 (if any), if software or edge-triggered or write-error
 //		all others = preserved
 
-SYM(xthal_get_intpending_nw)
+_SYM(xthal_get_intpending_nw)
 # if XCHAL_HAVE_INTERRUPTS
 	// Give us one more register to play with
-	//wsr	a4, EXCSAVE_1
+	//wsr.excsave1	a4
 
 	// Figure out which interrupt to process
 
@@ -430,8 +433,8 @@ SYM(xthal_get_intpending_nw)
 	    map[0]                = 0  (unused; for alignment)
 	*/
 
-	rsr	a4, INTERRUPT	// a4 = mask of interrupts pending, including those disabled
-	rsr	a2, INTENABLE	// a2 = mask of interrupts enabled
+	rsr.interrupt	a4	// a4 = mask of interrupts pending, including those disabled
+	rsr.intenable	a2	// a2 = mask of interrupts enabled
 	movi	a3, Xthal_vpri_state
 	and	a4, a2, a4	// a4 = mask of enabled interrupts pending
 	beqz	a4, gipfail	// if none (can happen for spurious level-triggered interrupts,
@@ -499,7 +502,7 @@ SYM(xthal_get_intpending_nw)
 	l32i	a6, a3, XTHAL_VPRI_ENABLED_OFS		// get global mask
 	sub	a5, a5, a3		// a5 = softpri * 4 (for below; here for efficiency)
 	and	a2, a2, a6				// and together
-	wsr	a2, INTENABLE		// disable interrupts at or below new vpri
+	wsr.intenable	a2		// disable interrupts at or below new vpri
 	//	a2,a6 = available
 
 	//  Update new virtual priority:
@@ -535,8 +538,8 @@ SYM(xthal_get_intpending_nw)
 #  if CLEARABLE_INTLEVEL1_MASK != 0
 	//movi	a2, CLEARABLE_INTLEVEL1_MASK
 	//and	a2, a2, a4
-	//wsr	a2, INTCLEAR
-	wsr	a4, INTCLEAR	// no effect if a4 not a software or edge-triggered or write-error interrupt
+	//wsr.intclear	a2
+	wsr.intclear	a4	// no effect if a4 not a software or edge-triggered or write-error interrupt
 #  endif
 
 	//  Convert the single-bit interrupt mask to an interrupt number.
@@ -547,7 +550,7 @@ SYM(xthal_get_intpending_nw)
 
 	//	a2 has vector number (0..31)
 
-	//rsr	a4, EXCSAVE_1
+	//rsr.excsave1	a4
 	ret
 
 gipfail:
@@ -565,13 +568,17 @@ gipfail:
 
 // -----------------------------------------------------------------
 
+#endif
+
+#if defined(__SPLIT__vpri_lock) || \
+    defined(__SPLIT__vpri_lock_nw)
 
 // void xthal_vpri_lock()
 //
 // Used internally by the Core HAL to block interrupts of higher or equal
 // priority than Xthal_vpri_locklevel during virtual interrupt operations.
 //
-SYMT(xthal_vpri_lock)
+DECLFUNC(xthal_vpri_lock)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
 	rsil	a6, 1				// save a6 = PS, set PS.INTLEVEL = 1
@@ -591,15 +598,19 @@ SYMT(xthal_vpri_lock)
 	l32i	a3, a3, XTHAL_VPRI_ENABLEMAP_OFS // a3 := Xthal_vpri_enablemap[0][Xthal_vpri_locklevel]
 	//interlock
 	and	a2, a4, a3
-  	wsr	a2, INTENABLE
+  	wsr.intenable	a2
 
 xthal_vpri_lock_done:
-	wsr	a6, PS				// restore PS.INTLEVEL
+	wsr.ps	a6				// restore PS.INTLEVEL
 	rsync
 # endif
 	abi_return
 	endfunc
 
+#endif
+
+#if defined(__SPLIT__vpri_unlock) || \
+    defined(__SPLIT__vpri_unlock_nw)
 
 // void xthal_vpri_unlock(void)
 //
@@ -607,7 +618,7 @@ xthal_vpri_lock_done:
 // This effectively "unlocks" interrupts disabled by xthal_vpri_lock()
 // (assuming the virtual interrupt priority hasn't changed).
 //
-SYMT(xthal_vpri_unlock)
+DECLFUNC(xthal_vpri_unlock)
 	abi_entry
 # if XCHAL_HAVE_INTERRUPTS
         //
@@ -623,9 +634,10 @@ SYMT(xthal_vpri_unlock)
 	l32i	a3, a3, XTHAL_VPRI_ENABLEMAP_OFS // a3 := Xthal_vpri_enablemap[0][Xthal_vpri_level]
 	//interlock
 	and	a2, a4, a3
-  	wsr	a2, INTENABLE
+  	wsr.intenable	a2
 # endif
 	abi_return
 	endfunc
 
+#endif /*SPLIT*/
 

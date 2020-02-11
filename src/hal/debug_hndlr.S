@@ -1,7 +1,7 @@
 // 
 // debug_hndlr.S -- default Xtensa debug exception handler
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/debug_hndlr.S#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/debug_hndlr.S#1 $
 
 // Copyright (c) 2003-2010 Tensilica Inc.
 //
@@ -25,7 +25,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <xtensa/coreasm.h>
-#include <xtensa/config/specreg.h>
 #include <xtensa/config/system.h>
 
 #if XCHAL_HAVE_DEBUG && XCHAL_HAVE_EXCEPTIONS
@@ -76,7 +75,7 @@
 	.global xthal_debugexc_defhndlr_nw
 	.align 4
 xthal_debugexc_defhndlr_nw:
-	rsr	a3, DEBUGCAUSE		// get cause of debug exception
+	rsr.debugcause	a3		// get cause of debug exception
 
 	//  Check for possible debug causes, in priority order.
 	//  We only handle the highest priority condition present.
@@ -86,7 +85,7 @@ xthal_debugexc_defhndlr_nw:
 
 	bbci.l	a3, DEBUGCAUSE_ICOUNT_SHIFT, 1f	// ICOUNT trap?
 	movi	a3, 0
-	wsr	a3, ICOUNT		// clear ICOUNT
+	wsr.icount a3				// clear ICOUNT
 	j	3f
 
 /*
@@ -96,35 +95,35 @@ xthal_debugexc_defhndlr_nw:
 #if XCHAL_NUM_IBREAK > 0
 1:	bbci.l	a3, DEBUGCAUSE_IBREAK_SHIFT, 1f	// IBREAK match?
 	movi	a3, 0
-	wsr	a3, IBREAKENABLE	// disable IBREAK traps
+	wsr.ibreakenable a3			// disable IBREAK traps
 	j	3f
 #endif
 
 /*  Also check for DBREAK registers:  */
 #if XCHAL_NUM_DBREAK > 0
-1:	bbci.l	a3, DEBUGCAUSE_DBREAK_SHIFT, 1f		// DBREAK match?
+1:	bbci.l	a3, DEBUGCAUSE_DBREAK_SHIFT, 1f	// DBREAK match?
 	movi	a3, 0
-	wsr	a3, DBREAKC_0			// disable DBREAK register 0
+	wsr.dbreakc0 a3				// disable DBREAK register 0
 # if XCHAL_NUM_DBREAK > 1
-	wsr	a3, DBREAKC_1			// disable DBREAK register 1
+	wsr.dbreakc1 a3				// disable DBREAK register 1
 # endif
 	j	3f
 #endif
 
-1:	bbci.l	a3, DEBUGCAUSE_BREAK_SHIFT, 1f		// BREAK instruction?
-	//rsr	a3, EPC+XCHAL_DEBUGLEVEL	// get PC pointing to BREAK
+1:	bbci.l	a3, DEBUGCAUSE_BREAK_SHIFT, 1f	// BREAK instruction?
+	//readsr epc XCHAL_DEBUGLEVEL a3	// get PC pointing to BREAK
 	//l8ui	a3, a3, 1			// get first 4-bit operand of BREAK (in 2nd byte)
 	//extui	a3, a3, (XCHAL_HAVE_BE*4), 4	// pos depends on endianness
 	//bnei	a3, 1, 3f			// is it a BREAK 1,x instruction?
-	rsr	a3, EPC+XCHAL_DEBUGLEVEL	// get PC pointing to BREAK
+	readsr	epc XCHAL_DEBUGLEVEL a3		// get PC pointing to BREAK
 	addi	a3, a3, 3			// skip BREAK instruction
-	wsr	a3, EPC+XCHAL_DEBUGLEVEL	// update PC
+	writesr	epc XCHAL_DEBUGLEVEL a3		// update PC
 	j	3f
 
-1:	bbci.l	a3, DEBUGCAUSE_BREAKN_SHIFT, 1f		// BREAK.N instruction?
-	rsr	a3, EPC+XCHAL_DEBUGLEVEL	// get PC pointing to BREAK
+1:	bbci.l	a3, DEBUGCAUSE_BREAKN_SHIFT, 1f	// BREAK.N instruction?
+	readsr	epc XCHAL_DEBUGLEVEL a3		// get PC pointing to BREAK
 	addi	a3, a3, 2			// skip BREAK.N instruction
-	wsr	a3, EPC+XCHAL_DEBUGLEVEL	// update PC
+	writesr	epc XCHAL_DEBUGLEVEL a3		// update PC
 	j	3f
 
 1:	bbci.l	a3, DEBUGCAUSE_DEBUGINT_SHIFT, 1f	// debug interrupt?
@@ -133,7 +132,7 @@ xthal_debugexc_defhndlr_nw:
 
 1:	//  Unknown debug case?  ignore
 
-3:	rsr	a3, EXCSAVE+XCHAL_DEBUGLEVEL	// restore a3
+3:	readsr	excsave XCHAL_DEBUGLEVEL a3	// restore a3
 	rfi	XCHAL_DEBUGLEVEL		// return from debug exception
 
 	.size	xthal_debugexc_defhndlr_nw, . - xthal_debugexc_defhndlr_nw

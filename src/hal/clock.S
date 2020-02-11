@@ -1,7 +1,7 @@
 // 
 // clock.S - assembly language clock routines
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/clock.S#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/clock.S#1 $
 
 // Copyright (c) 2003-2010 Tensilica Inc.
 //
@@ -54,7 +54,7 @@
 xthal_get_ccount:
 	abi_entry
 #if XCHAL_HAVE_CCOUNT
-	rsr	a2, CCOUNT
+	rsr.ccount	a2
 /*
  *  The following alternative (in absence of CCOUNT) doesn't work well,
  *  because ICOUNT is often used for debugging.  (And when it isn't,
@@ -63,7 +63,7 @@ xthal_get_ccount:
  *  ICOUNT exceptions.)
  *
  *	#elif XCHAL_HAVE_DEBUG
- *		rsr	a2, ICOUNT	// no CCOUNT, return ICOUNT if available
+ *		rsr.icount	a2	// no CCOUNT, return ICOUNT if available
  */
 #else
 	movi	a2, 0		// else no counter at all, just return zero
@@ -85,20 +85,24 @@ xthal_set_ccompare:
 	abi_entry
 #if XCHAL_NUM_TIMERS > 0
 	bnez	a2, 1f
-	wsr	a3, CCOMPARE_0
-
-	.macro	set_ccompare_n	num
-	j	2f
+	wsr.ccompare0	a3
+	rsync
+	abi_return
+#endif
 1:
-	bgeui	a2, (\num + 1), 1f
-	wsr	a3, CCOMPARE_0 + \num
-	.endm
-	iterate	1, XCHAL_NUM_TIMERS-1, set_ccompare_n
-
-2:	isync
-	isync_retw_nop
-1:
-#endif /* XCHAL_NUM_TIMERS > 0 */
+#if XCHAL_NUM_TIMERS > 1
+	bnei	a2, 1, 2f
+	wsr.ccompare1	a3
+	rsync
+	abi_return
+#endif
+2:
+#if XCHAL_NUM_TIMERS > 2
+	bnei	a2, 2, 3f
+	wsr.ccompare2	a3
+	rsync
+#endif
+3:
 	abi_return
 	.size	xthal_set_ccompare, . - xthal_set_ccompare
 
@@ -112,22 +116,23 @@ xthal_get_ccompare:
 	abi_entry
 #if XCHAL_NUM_TIMERS > 0
 	bnez	a2, 1f
-	rsr	a2, CCOMPARE_0
+	rsr.ccompare0	a2
 	abi_return
+#endif
 1:
-
-	.macro	get_ccompare_n	num
-	bgeui	a2, (\num + 1), 1f
-	rsr	a2, CCOMPARE_0 + \num
+#if XCHAL_NUM_TIMERS > 1
+	bnei	a2, 1, 2f
+	rsr.ccompare1	a2
 	abi_return
-1:
-	.endm
-	iterate	1, XCHAL_NUM_TIMERS-1, get_ccompare_n
-
-#endif /* XCHAL_NUM_TIMERS > 0 */
-	movi	a2, 0		// non-existent CCOMPAREn, return 0
+#endif
 2:
+#if XCHAL_NUM_TIMERS > 2
+	bnei	a2, 2, 3f
+	rsr.ccompare2	a2
+	abi_return
+#endif
+3:
+	movi	a2, 0
 	abi_return
 	.size	xthal_get_ccompare, . - xthal_get_ccompare
-
 

@@ -51,9 +51,30 @@ xthal_compare_and_set:
 	// a3 == test value
 	// a4 == set value
 
-#if XCHAL_HAVE_S32C1I && XCHAL_HW_MIN_VERSION_MAJOR >= 2200
-	wsr	a3, SCOMPARE1
+#if XCHAL_HAVE_EXCLUSIVE
+	mov	a6, a4		// a6 = copy of set_value
+1:
+	l32ex	a5, a2		// a5 = *address, set monitor
+	bne	a5, a3, 2f	// skip write if *address != test_value
+	mov	a4, a6		// a4 = set_value
+	s32ex	a4, a2		// *address = set_value
+	getex	a4		// get result of store
+	beqz	a4, 1b
+2:
+	mov	a2, a5		// a2 = *address, return value
+	clrex			// in case we skipped write
+#elif XCHAL_HAVE_S32C1I && XCHAL_HW_MIN_VERSION_MAJOR >= 2200
+	mov	a6, a4		// a6 = copy of set_value
+	movi	a5, -1
+	xor	a5, a5, a3	// a5 = ~a3
+	wsr.scompare1	a3	// set test_value
+1:
+	mov	a4, a6		// a4 = set_value
 	s32c1i	a4, a2, 0
+	bne	a4, a5, 2f	// if a4 != ~SCOMPARE1 then done
+	l32i	a4, a2, 0	// a4 = *address
+	bne	a4, a5, 1b	// retry if *address != ~SCOMPARE1
+2:
 	mov	a2, a4
 #else
 	mov	a7, a2		// a7 == address, a2 is return val
@@ -67,7 +88,7 @@ xthal_compare_and_set:
 
 done:
 # if XCHAL_HAVE_INTERRUPTS
-	wsr	a5, PS		// restore the PS
+	wsr.ps	a5		// restore the PS
 	rsync
 # endif
 #endif
@@ -93,7 +114,7 @@ done:
 xthal_get_prid:
 	abi_entry
 #if XCHAL_HAVE_PRID
-	rsr	a2, PRID
+	rsr.prid a2
 #else
 	movi	a2, 0
 #endif

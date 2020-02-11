@@ -1,7 +1,7 @@
 // 
 // mmu.c - MMU related functions
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/mmu.c#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/mmu.c#1 $
 
 // Copyright (c) 2002, 2008 Tensilica Inc.
 //

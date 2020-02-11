@@ -1,5 +1,5 @@
 /*  xtruntime-frames.h  -  exception stack frames for single-threaded run-time  */
-/* $Id: //depot/rel/Eaglenest/Xtensa/OS/include/xtensa/xtruntime-frames.h#1 $ */
+/* $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/include/xtensa/xtruntime-frames.h#1 $ */
 
 /*
  * Copyright (c) 2002-2012 Tensilica Inc.
@@ -44,6 +44,11 @@
 #define STRUCT_END(sname)	} sname;
 #endif /*_ASMLANGUAGE||__ASSEMBLER__*/
 
+/* Coprocessors masks.
+ * NOTE: currently only 2 supported.
+ */
+#define CP0_MASK	(1 << 0)
+#define CP1_MASK	(1 << 1)
 
 /*
  *  Kernel vector mode exception stack frame.
@@ -82,14 +87,12 @@ STRUCT_FIELD (long,4,UEXC_,pc)
 STRUCT_FIELD (long,4,UEXC_,ps)
 STRUCT_FIELD (long,4,UEXC_,sar)
 STRUCT_FIELD (long,4,UEXC_,vpri)
-#ifdef __XTENSA_CALL0_ABI__
 STRUCT_FIELD (long,4,UEXC_,a0)
-#endif
+STRUCT_FIELD (long,4,UEXC_,a1)
 STRUCT_FIELD (long,4,UEXC_,a2)
 STRUCT_FIELD (long,4,UEXC_,a3)
 STRUCT_FIELD (long,4,UEXC_,a4)
 STRUCT_FIELD (long,4,UEXC_,a5)
-#ifdef __XTENSA_CALL0_ABI__
 STRUCT_FIELD (long,4,UEXC_,a6)
 STRUCT_FIELD (long,4,UEXC_,a7)
 STRUCT_FIELD (long,4,UEXC_,a8)
@@ -100,31 +103,68 @@ STRUCT_FIELD (long,4,UEXC_,a12)
 STRUCT_FIELD (long,4,UEXC_,a13)
 STRUCT_FIELD (long,4,UEXC_,a14)
 STRUCT_FIELD (long,4,UEXC_,a15)
-#endif
 STRUCT_FIELD (long,4,UEXC_,exccause)	/* NOTE: can probably rid of this one (pass direct) */
+STRUCT_FIELD (long,4,UEXC_,align1)	/* alignment to 8 bytes */
 #if XCHAL_HAVE_LOOPS
 STRUCT_FIELD (long,4,UEXC_,lcount)
 STRUCT_FIELD (long,4,UEXC_,lbeg)
 STRUCT_FIELD (long,4,UEXC_,lend)
+STRUCT_FIELD (long,4,UEXC_,align2)	/* alignment to 8 bytes */
 #endif
 #if XCHAL_HAVE_MAC16
 STRUCT_FIELD (long,4,UEXC_,acclo)
 STRUCT_FIELD (long,4,UEXC_,acchi)
 STRUCT_AFIELD(long,4,UEXC_,mr, 4)
 #endif
-/* ALIGNPAD is the 16-byte alignment padding. */
-#ifdef __XTENSA_CALL0_ABI__
-# define CALL0_ABI	1
-#else
-# define CALL0_ABI	0
+#if (XCHAL_CP_MASK & CP0_MASK)
+STRUCT_AFIELD (long,4,UEXC_,cp0, XCHAL_CP0_SA_SIZE / 4)
 #endif
-#define ALIGNPAD  ((3 + XCHAL_HAVE_LOOPS*1 + XCHAL_HAVE_MAC16*2 + CALL0_ABI*1) & 3)
+#if (XCHAL_CP_MASK & CP1_MASK)
+STRUCT_AFIELD (long,4,UEXC_,cp1, XCHAL_CP1_SA_SIZE / 4)
+#endif
+/* ALIGNPAD is the 16-byte alignment padding. */
+#define ALIGNPAD  ((2 + XCHAL_HAVE_MAC16*2 + ((XCHAL_CP0_SA_SIZE%16)/4) + ((XCHAL_CP1_SA_SIZE%16)/4)) & 3)
 #if ALIGNPAD
 STRUCT_AFIELD(long,4,UEXC_,pad, ALIGNPAD)	/* 16-byte alignment padding */
 #endif
 /*STRUCT_AFIELD_A(char,1,XCHAL_CPEXTRA_SA_ALIGN,UEXC_,ureg, (XCHAL_CPEXTRA_SA_SIZE+3)&-4)*/	/* not used */
 STRUCT_END(UserFrame)
 
+/*
+ * xtos_structures_pointers contains ptrs to all structures created for
+ * each processor individually.
+ *
+ * To access the core specific structure from ASM (after threadptr is set):
+ * xtos_addr_percore a13, xtos_interrupt_table
+ */
+STRUCT_BEGIN
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_enabled)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_intstruct)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_interrupt_table)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_interrupt_mask_table)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_stack_for_interrupt_1)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_stack_for_interrupt_2)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_stack_for_interrupt_3)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_stack_for_interrupt_4)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_stack_for_interrupt_5)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_interrupt_ctx)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_saved_ctx)
+STRUCT_FIELD(void*,4,XTOS_PTR_TO_,xtos_saved_sp)
+STRUCT_END(xtos_structures_pointers)
+
+/*
+ * xtos_task_context contains information about currently
+ * executed task
+ */
+
+#define XTOS_TASK_CONTEXT_OWN_STACK	1
+
+STRUCT_BEGIN
+STRUCT_FIELD (UserFrame*,4,TC_,stack_pointer)
+STRUCT_FIELD (void*,4,TC_,stack_base)
+STRUCT_FIELD (long,4,TC_,stack_size)
+STRUCT_FIELD (long,4,TC_,flags)
+STRUCT_END(xtos_task_context)
 
 #if defined(_ASMLANGUAGE) || defined(__ASSEMBLER__)
 

@@ -2,7 +2,7 @@
 // mem_ecc_parity.S - utility routines for the local memory ECC/parity option
 //			(memory error checking and exceptions)
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/mem_ecc_parity.S#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/mem_ecc_parity.S#1 $
 
 // Copyright (c) 2006-2010 Tensilica Inc.
 //
@@ -72,6 +72,7 @@
 //  Inject errors into instruction and/or data RAMs, or cache data or tags
 //------------------------------------------------------------------------
 
+#if defined(__SPLIT__memep_inject_error)
 
 // void xthal_memep_inject_error(void *addr, int size, int flags);
 // where:
@@ -120,12 +121,12 @@ SYMBOL(xthal_memep_inject_error)
 
 	//  Save current MESR and set test mode:
 
-	rsr	a8, MESR
+	rsr.mesr a8
 	bbsi.l	a8, MESR_ERRTEST_SHIFT, .Lproceed // already in test mode?
 	addmi	a9, a8, MESR_ERRTEST		// enable test mode
 	bbci.l	a8, MESR_ERRENAB_SHIFT, 1f
 	addmi	a9, a9, - MESR_ERRENAB		// disable error checks
-1:	xsr	a9, MESR
+1:	xsr.mesr	a9
 	beq	a8, a9, .Lproceed		// clean update, continue
 	bbci.l	a9, MESR_RCE_SHIFT, .Lproceed	// we likely restored a lost RCE, just keep it
 	//  At this point, either we:
@@ -141,8 +142,8 @@ SYMBOL(xthal_memep_inject_error)
 	addmi	a9, a9, MESR_ERRTEST
 	bbci.l	a9, MESR_ERRENAB_SHIFT, 1f
 	addmi	a9, a9, - MESR_ERRENAB		// disable error checks
-1:	wsr	a9, MESR
-	//xsr	a9, MESR
+1:	wsr.mesr a9
+	//xsr.mesr	a9
 	//beq	a8, a9, .Lproceed		// updated fine, continue
 	//
 	//  Above we could have used XSR instead of WSR.
@@ -175,9 +176,9 @@ SYMBOL(xthal_memep_inject_error)
 
 	floopgtz	a3, .Ldctagloop
 	ldct	a9, a2		// load dcache line tag
-	rsr	a7, MECR	// get check bits
+	rsr.mecr a7		// get check bits
 	xor	a7, a7, a6	// ECC: single-bit error; Parity: NO-OP
-	wsr	a7, MECR	// setup modified check bits
+	wsr.mecr a7		// setup modified check bits
 	sdct	a9, a2		// store tag with modified check bits
 	addi	a2, a2, XCHAL_DCACHE_LINESIZE	// increment to next line
 	floopend	a3, .Ldctagloop
@@ -200,9 +201,9 @@ SYMBOL(xthal_memep_inject_error)
 
 	floopgtz	a3, .Lictagloop
 	lict	a9, a2		// load icache line tag
-	rsr	a7, MECR	// get check bits
+	rsr.mecr a7		// get check bits
 	xor	a7, a7, a6	// ECC: single-bit error; Parity: NO-OP
-	wsr	a7, MECR	// setup modified check bits
+	wsr.mecr a7		// setup modified check bits
 	sict	a9, a2		// store tag with modified check bits
 	addi	a2, a2, XCHAL_ICACHE_LINESIZE	// increment to next line
 	floopend	a3, .Lictagloop
@@ -221,9 +222,9 @@ SYMBOL(xthal_memep_inject_error)
 
 	floopgtz	a3, .Licwloop
 	licw	a9, a2		// load word of icache line data
-	rsr	a7, MECR	// get check bits
+	rsr.mecr a7		// get check bits
 	xor	a7, a7, a6	// ECC: single-bit error; Parity: NO-OP
-	wsr	a7, MECR	// setup modified check bits
+	wsr.mecr a7		// setup modified check bits
 	sicw	a9, a2		// store data with modified check bits
 	addi	a2, a2, 4	// increment to next word
 	floopend	a3, .Licwloop
@@ -243,9 +244,9 @@ SYMBOL(xthal_memep_inject_error)
 
 	floopgtz	a3, .Lendloop
 	l32i	a9, a2, 0	// load data
-	rsr	a7, MECR	// get check bits
+	rsr.mecr a7		// get check bits
 	xor	a7, a7, a6	// ECC: single-bit error; Parity: NO-OP
-	wsr	a7, MECR	// setup modified check bits
+	wsr.mecr a7		// setup modified check bits
 	s32i	a9, a2, 0	// store data with modified check bits
 	addi	a2, a2, 4	// increment to next word
 	floopend	a3, .Lendloop
@@ -253,22 +254,22 @@ SYMBOL(xthal_memep_inject_error)
 .L_inject_done:
 	//  Restore MESR (a8 is the saved original MESR):
 	bbsi.l	a8, MESR_ERRTEST_SHIFT, 2f	// was already in test mode
-	rsr	a6, MESR
+	rsr.mesr a6
 	addmi	a9, a6, - MESR_ERRTEST		// disable test mode
 	bbci.l	a8, MESR_ERRENAB_SHIFT, 1f
 	addmi	a9, a9, MESR_ERRENAB		// enable error checks
-1:	xsr	a9, MESR
+1:	xsr.mesr	a9
 	beq	a6, a9, 2f			// clean update, done
 	bbci.l	a9, MESR_RCE_SHIFT, 2f		// we likely restored a lost RCE, just keep it
 	addmi	a9, a9, - MESR_ERRTEST
 	bbci.l	a8, MESR_ERRENAB_SHIFT, 1f
 	addmi	a9, a9, MESR_ERRENAB		// disable error checks
-1:	wsr	a9, MESR
+1:	wsr.mesr a9
 2:
 
 	//  Restore PS.INTLEVEL:
 # if XCHAL_HAVE_INTERRUPTS
-	wsr	a11, PS
+	wsr.ps	a11
 	rsync
 # endif
 #endif /* XCHAL_HAVE_MEM_ECC_PARITY */
@@ -278,6 +279,7 @@ SYMBOL(xthal_memep_inject_error)
 	.size	xthal_memep_inject_error, . - xthal_memep_inject_error
 
 
+#endif /*split*/
 
 //----------------------------------------------------------------------
 
