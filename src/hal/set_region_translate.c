@@ -22,7 +22,7 @@
  */
 #include <xtensa/config/core.h>
 
-#if XCHAL_HAVE_XEA2
+#if XCHAL_HAVE_XEA2 && (!XCHAL_HAVE_MPU)
 /*
  * C-stubs to issue the tlb related instructions (with dsync and isync's if needed).
  *
@@ -69,12 +69,12 @@ static inline unsigned probe_itlb(unsigned addr) {
 	return tmp;
 }
 
-void invalidate_dtlb_entry(unsigned addr) {
+static inline void invalidate_dtlb_entry(unsigned addr) {
 	__asm__ __volatile__("idtlb  %0; dsync \n\t"
 			: : "a" (addr));
 }
 
-void invalidate_itlb_entry(unsigned addr) {
+static inline void invalidate_itlb_entry(unsigned addr) {
 	__asm__ __volatile__("iitlb  %0 ; isync\n\t"
 			: : "a" (addr));
 }
@@ -106,7 +106,7 @@ static inline unsigned read_itlbcfg() {
  *  unsigned cattr	4 bit value encoding the caching properties and rights (MMU only).
  *
  *  returns 0 (XCHAL_SUCCESS) if successful
- *  returns non zero (XCHAL_UNSUPPORTED_ON_THIS_ARCH) on failure
+ *  returns non zero (XCHAL_UNSUPPORTED) on failure
  *
  *  This function has the following limitations:
  *
@@ -119,6 +119,9 @@ static inline unsigned read_itlbcfg() {
  *
  */
 int xthal_set_region_translation_raw(void *vaddr, void *paddr, unsigned cattr) {
+#if XCHAL_HAVE_MPU
+	return XTHAL_UNSUPPORTED;
+#else
 #if XCHAL_HAVE_XEA2
 #if XCHAL_HAVE_XLT_CACHEATTR || (XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY)
 # if XCHAL_HAVE_XLT_CACHEATTR
@@ -129,12 +132,13 @@ int xthal_set_region_translation_raw(void *vaddr, void *paddr, unsigned cattr) {
 	unsigned ppn_ca = ((unsigned) paddr & 0xFFFFFFF0) + (cattr & 0xF);
 	write_dtlb_entry(vpn_way, ppn_ca);
 	write_itlb_entry(vpn_way, ppn_ca);
-	return XCHAL_SUCCESS;
+	return XTHAL_SUCCESS;
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
 #endif
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
+#endif
 #endif
 }
 
@@ -150,10 +154,11 @@ int xthal_set_region_translation_raw(void *vaddr, void *paddr, unsigned cattr) {
  * 	void**		paddr		This value can be 0, or can point to a pointer variable which will be updated to contain the physical address
  * 	unsigned*	way			This value can be 0, or can point to an unsigned variable which will be updated to contain the TLB way.
  * 	unsigned*   cattr		This value can be 0, or can point to an unsigned variable which will be updated to contain the cache attr
+ * 	                        For MPU configurations bits 0..3 hold the access rights and bits 4..8 hold the encoded memory type
  *
  *  Returns 	0 (XCHAL_SUCCESS) 				if successful
  * 				XTHAL_NO_MAPPING				if there is no current mapping for the virtual address
- * 				XCHAL_UNSUPPORTED_ON_THIS_ARCH 	if unsupported
+ * 				XCHAL_UNSUPPORTED            	if unsupported
  *
  * 	Limitations:
  * 					Assumes that architecture variable DVARWAY56 is "Variable"
@@ -161,6 +166,18 @@ int xthal_set_region_translation_raw(void *vaddr, void *paddr, unsigned cattr) {
  */
 int xthal_v2p(void* vaddr, void** paddr, unsigned *way, unsigned* cattr) {
 #if XCHAL_HAVE_XEA2
+#if XCHAL_HAVE_MPU
+  if (paddr)
+    *paddr = vaddr;
+  if (way)
+    *way = 0;
+  if (cattr)
+  {
+      struct xthal_MPU_entry x = xthal_get_entry_for_address(vaddr, 0);
+      *cattr = XTHAL_MPU_ENTRY_GET_ACCESS(x) | XTHAL_MPU_ENTRY_GET_MEMORY_TYPE(x) << XTHAL_AR_WIDTH;
+  }
+  return XTHAL_SUCCESS;
+#else
 	unsigned long probe = probe_dtlb((unsigned) vaddr);
 #if !XCHAL_HAVE_PTP_MMU
 	if (!(0x1 & probe))
@@ -222,7 +239,7 @@ int xthal_v2p(void* vaddr, void** paddr, unsigned *way, unsigned* cattr) {
 						ppn = 0xfc000000;
 						break;
 					default:
-						return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+						return XTHAL_UNSUPPORTED;
 					}
 				}
 					break;
@@ -239,7 +256,7 @@ int xthal_v2p(void* vaddr, void** paddr, unsigned *way, unsigned* cattr) {
 						ppn = 0xf0000000; // 256MB pages
 					break;
 				default:
-					return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+					return XTHAL_UNSUPPORTED;
 					break;
 				}
 			ppn1 = ppn & temp;
@@ -247,9 +264,10 @@ int xthal_v2p(void* vaddr, void** paddr, unsigned *way, unsigned* cattr) {
 		}
 	}
 #endif
-	return XCHAL_SUCCESS;
+	return XTHAL_SUCCESS;
+#endif
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
 #endif
 }
 
@@ -354,7 +372,7 @@ static inline int is_writeback(unsigned attr) {
  *			XTHAL_CAFLAG_NO_PARTIAL - If this flag is specified, then
  *			only pages that are completely covered by the specified region
  *			are affected.  If this flag is specified, and no pages are completely
- *			covered by the region, then no pages are affected and XCHAL_NO_PAGES_MAPPED
+ *			covered by the region, then no pages are affected and XCHAL_NO_REGIONS_COVERED
  *			is returned.
  *
  *
@@ -362,7 +380,7 @@ static inline int is_writeback(unsigned attr) {
  *  Returns:
  *	XCHAL_SUCCESS 	-			successful, or size is zero
  *
- *	XCHAL_NO_PAGES_MAPPED - 	XTHAL_CAFLAG_NO_PARTIAL flag specified and address range
+ *	XCHAL_NO_REGIONS_COVERED	- 	XTHAL_CAFLAG_NO_PARTIAL flag specified and address range
  *								is valid with a non-zero size, however no 512 MB region (or page)
  *								is completely covered by the range
  *
@@ -378,7 +396,7 @@ static inline int is_writeback(unsigned attr) {
  */
 int xthal_set_region_translation(void* vaddr, void* paddr, unsigned size,
 		unsigned cattr, unsigned flags) {
-#if XCHAL_HAVE_XEA2
+#if XCHAL_HAVE_XEA2 & !XCHAL_HAVE_MPU
 #if XCHAL_HAVE_XLT_CACHEATTR || (XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY)
 	const unsigned CA_MASK = 0xF;
 	const unsigned addr_mask = 0x1fffffff;
@@ -394,9 +412,9 @@ int xthal_set_region_translation(void* vaddr, void* paddr, unsigned size,
 	int rv;
 	int i;
 	if (size == 0)
-		return XCHAL_SUCCESS;
+		return XTHAL_SUCCESS;
 	if ((vaddr_a & addr_mask) ^ (paddr_a & addr_mask))
-		return XCHAL_ADDRESS_MISALIGNED;
+		return XTHAL_ADDRESS_MISALIGNED;
 	icache_attr = cattr & CA_MASK;
 #if (XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY)
 	// if using the mmu in spanning way mode then 'and in' the R, RX, RW, RWX bits
@@ -407,14 +425,14 @@ int xthal_set_region_translation(void* vaddr, void* paddr, unsigned size,
 	end_paddr = paddr_a + size - 1;
 
 	if ((end_vaddr < vaddr_a) || (end_paddr < paddr_a))
-		return XCHAL_INVALID_ADDRESS;
+		return XTHAL_INVALID_ADDRESS;
 	start_va_reg = vaddr_a >> addr_shift;
 	end_va_reg = end_vaddr >> addr_shift;
 	start_pa_reg = paddr_a >> addr_shift;
 	if ((flags & XTHAL_CAFLAG_EXACT)
 			&& ((size & addr_mask) || (vaddr_a & addr_mask)
 					|| (paddr_a & addr_mask)))
-		return XCHAL_INEXACT;
+		return XTHAL_INEXACT;
 	if (flags & XTHAL_CAFLAG_NO_PARTIAL) {
 		if (vaddr_a & addr_mask) {
 			start_va_reg++;
@@ -424,7 +442,7 @@ int xthal_set_region_translation(void* vaddr, void* paddr, unsigned size,
 			end_va_reg--;
 	}
 	if (end_va_reg < start_va_reg)
-		return XCHAL_NO_PAGES_MAPPED;
+		return XTHAL_NO_REGIONS_COVERED;
 	/*
 	 * Now we need to take care of any uncommitted cache writes in the affected regions
 	 * 1) first determine if any regions are in write back mode
@@ -473,12 +491,12 @@ int xthal_set_region_translation(void* vaddr, void* paddr, unsigned size,
 		xthal_icache_all_invalidate();
 #endif
 	}
-	return XCHAL_SUCCESS;
+	return XTHAL_SUCCESS;
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
 #endif
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
 #endif
 }
 
@@ -497,20 +515,20 @@ int xthal_set_region_translation(void* vaddr, void* paddr, unsigned size,
  *
  */
 int xthal_invalidate_region(void* vaddr) {
-#if XCHAL_HAVE_XEA2
+#if XCHAL_HAVE_XEA2 & !XCHAL_HAVE_MPU
 #if (XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY)
 	unsigned addr = (unsigned) vaddr;
 	if (addr & 0x1fffffff)
-		return XCHAL_INVALID_ADDRESS;
+		return XTHAL_INVALID_ADDRESS;
 	addr += XCHAL_SPANNING_WAY;
 	invalidate_dtlb_entry(addr);
 	invalidate_itlb_entry(addr);
-	return XCHAL_SUCCESS;
+	return XTHAL_SUCCESS;
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
 #endif
 #else
-	return XCHAL_UNSUPPORTED_ON_THIS_ARCH;
+	return XTHAL_UNSUPPORTED;
 #endif
 }
 

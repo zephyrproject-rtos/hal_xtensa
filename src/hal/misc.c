@@ -1,7 +1,7 @@
 //
 // misc.c - miscellaneous constants
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/misc.c#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/misc.c#1 $
 
 // Copyright (c) 2004-2005 Tensilica Inc.
 //
@@ -94,13 +94,21 @@ const unsigned char Xthal_have_mimic_cacheattr	= XCHAL_HAVE_MIMIC_CACHEATTR;
 const unsigned char Xthal_have_xlt_cacheattr	= XCHAL_HAVE_XLT_CACHEATTR;
 const unsigned char Xthal_have_cacheattr	= XCHAL_HAVE_CACHEATTR;
 const unsigned char Xthal_have_tlbs		= XCHAL_HAVE_TLBS;
-
+#if XCHAL_HAVE_MPU
+const unsigned char Xthal_mmu_asid_bits		= 0;
+const unsigned char Xthal_mmu_asid_kernel	= 0;
+const unsigned char Xthal_mmu_rings		= 0;
+const unsigned char Xthal_mmu_ring_bits		= 0;
+const unsigned char Xthal_mmu_sr_bits		= 0;
+const unsigned char Xthal_mmu_ca_bits		= 0;
+#else
 const unsigned char Xthal_mmu_asid_bits		= XCHAL_MMU_ASID_BITS;
 const unsigned char Xthal_mmu_asid_kernel	= XCHAL_MMU_ASID_KERNEL;
 const unsigned char Xthal_mmu_rings		= XCHAL_MMU_RINGS;
 const unsigned char Xthal_mmu_ring_bits		= XCHAL_MMU_RING_BITS;
 const unsigned char Xthal_mmu_sr_bits		= XCHAL_MMU_SR_BITS;
 const unsigned char Xthal_mmu_ca_bits		= XCHAL_MMU_CA_BITS;
+#endif
 #if XCHAL_HAVE_TLBS
 const unsigned int  Xthal_mmu_max_pte_page_size	= XCHAL_MMU_MAX_PTE_PAGE_SIZE;
 const unsigned int  Xthal_mmu_min_pte_page_size	= XCHAL_MMU_MIN_PTE_PAGE_SIZE;

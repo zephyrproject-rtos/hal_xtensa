@@ -1,6 +1,6 @@
 /*  attribute.c - Cache attribute (memory access mode) related functions  */
 
-/* $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/attribute.c#1 $ */
+/* $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/attribute.c#1 $ */
 
 /*
  * Copyright (c) 2004-2009 Tensilica Inc.
@@ -94,12 +94,29 @@
  *
  *	cattr	cache attribute (encoded);
  *		typically taken from compile-time HAL constants
- *		XCHAL_CA_{BYPASS, WRITETHRU, WRITEBACK[_NOALLOC], ILLEGAL}
+ *		XCHAL_CA_{BYPASS[BUF], WRITETHRU, WRITEBACK[_NOALLOC], ILLEGAL}
  *		(defined in <xtensa/config/core.h>);
  *		in XEA1, this corresponds to the value of a nibble
  *		in the CACHEATTR register;
  *		in XEA2, this corresponds to the value of the
  *		cache attribute (CA) field of each TLB entry
+ *
+ *		On MPU configurations, the cattr is composed of accessRights
+ *		and memoryType.  The accessRights occupy bits 0..3 and are
+ *		typically taken from the XTHAL_AR constants.  The memory type
+ *		is specified by either a bitwise or-ing of the XTHAL_MEM_...
+ *		constants or if none of the XTHAL_MEM_... constants are
+ *		specified, bits 4..12 are used for the memory type (that
+ *		allows a cattr obtained by xthal_v2p() to be passed directly.
+ *
+ *		In addition on MPU configurations if the
+ *		XTHAL_MPU_USE_EXISTING_MEMORY_TYPE bit is set then the existing
+ *		memoryType at the first address in the region is used for the
+ *		memoryType of the new region.
+ *
+ *		Likewise, if the XTHAL_MPU_USE_EXISTING_ACCESS_RIGHTS bit is set
+ *		in cattr, then the existing accessRights at the first address
+ *		in the region are used for the accessRights of the new region.
  *
  *	flags	bitwise combination of flags XTHAL_CAFLAG_*
  *		(see xtensa/hal.h for brief description of each flag);
@@ -120,6 +137,7 @@
  *			XCHAL_CA_WRITEBACK	writeback cached
  *			XCHAL_CA_WRITEBACK_NOALLOC writeback no-write-alloc
  *			XCHAL_CA_WRITETHRU	writethrough cached
+ *			XCHAL_CA_BYPASSBUF	bypass with write buffering 
  *			XCHAL_CA_BYPASS		bypass (uncached)
  *		This is consistent with requirements of certain
  *		devices that no caches be used, or in certain cases
@@ -135,6 +153,8 @@
  *		both the XTHAL_CAFLAG_EXPAND flag and the XCHAL_CA_ILLEGAL
  *		cache attribute.
  *
+ *		The XTHAL_CAFLAG_EXPAND is not supported on MPU configurations.
+ *
  *  Returns:
  *	0	successful, or size is zero
  *	-1	XTHAL_CAFLAG_NO_PARTIAL flag specified and address range
@@ -147,12 +167,24 @@
  */
 int  xthal_set_region_attribute( void *vaddr, unsigned size, unsigned cattr, unsigned flags )
 {
-#if XCHAL_HAVE_PTP_MMU && !XCHAL_HAVE_SPANNING_WAY
+#if XCHAL_HAVE_MPU
+    if (cattr & 0xffffe000) // check if XTHAL mem flags were supplied
+        // in this case just pass cattr as the memType paramenter
+       return xthal_mpu_set_region_attribute(vaddr, size, cattr, cattr, flags);
+    else
+       // otherwise we take the bits 0-3 for accessRights and bits 4-13 as the memoryType
+       return xthal_mpu_set_region_attribute(vaddr, size, cattr & 0xf, (cattr & 0x1ff0) >> 4, flags);
+#elif XCHAL_HAVE_PTP_MMU && !XCHAL_HAVE_SPANNING_WAY
     return -4;		/* full MMU not supported */
 #else
 /*  These cache attribute encodings are valid for XEA1 and region protection only:  */
 # if XCHAL_HAVE_PTP_MMU
 #  define CA_BYPASS		XCHAL_CA_BYPASS
+# ifdef XCHAL_CA_BYPASSBUF
+#  define CA_BYPASSBUF		XCHAL_CA_BYPASSBUF
+# else
+#  define CA_BYPASSBUF	XCHAL_CA_BYPASS
+# endif
 #  define CA_WRITETHRU		XCHAL_CA_WRITETHRU
 #  define CA_WRITEBACK		XCHAL_CA_WRITEBACK
 #  define CA_WRITEBACK_NOALLOC	XCHAL_CA_WRITEBACK_NOALLOC
@@ -160,12 +192,14 @@ int  xthal_set_region_attribute( void *vaddr, unsigned size, unsigned cattr, uns
 # else
 /*  Hardcode these, because they get remapped when caches or writeback not configured:  */
 #  define CA_BYPASS		2
+#  define CA_BYPASSBUF		6
 #  define CA_WRITETHRU		1
 #  define CA_WRITEBACK		4
 #  define CA_WRITEBACK_NOALLOC	5
 #  define CA_ILLEGAL		15
 # endif
 # define CA_MASK	0xF	/*((1L<<XCHAL_CA_BITS)-1)*/	/* mask of cache attribute bits */
+# define IS_CACHED(attr) ((attr == CA_BYPASS) ||  (attr == CA_BYPASSBUF))
 
     unsigned start_region, start_offset, end_vaddr, end_region, end_offset;
     unsigned cacheattr, cachewrtr, i, disabled_cache = 0;
@@ -210,11 +244,11 @@ int  xthal_set_region_attribute( void *vaddr, unsigned size, unsigned cattr, uns
 	     *  from <a> to <b> with the EXPAND flag; an attribute's "pri"
 	     *  value (from this array) can only monotonically increase:  */
 	    const static signed char _Xthal_ca_pri[16] = {[CA_ILLEGAL] = -1,
-			[CA_WRITEBACK] = 3, [CA_WRITEBACK_NOALLOC] = 3, [CA_WRITETHRU] = 4, [CA_BYPASS] = 9 };
+			[CA_WRITEBACK] = 3, [CA_WRITEBACK_NOALLOC] = 3, [CA_WRITETHRU] = 4, [CA_BYPASSBUF] = 8, [CA_BYPASS] = 9 };
 	    if (_Xthal_ca_pri[newattr] < _Xthal_ca_pri[oldattr])
 		newattr = oldattr;	/* avoid going to lesser access */
 	}
-	if (newattr == CA_BYPASS && oldattr != CA_BYPASS)
+	if (IS_CACHED(newattr) && !IS_CACHED(oldattr))
 	    disabled_cache = 1;		/* we're disabling the cache for some region */
 # if XCHAL_DCACHE_IS_WRITEBACK
 	{

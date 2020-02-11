@@ -1,7 +1,7 @@
 // 
 // debug.c - debug related constants and functions
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/debug.c#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/debug.c#1 $
 
 // Copyright (c) 2002 Tensilica Inc.
 //
@@ -25,7 +25,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <xtensa/hal.h>
-#include <xtensa/config/specreg.h>
 #include <xtensa/config/core.h>
 
 

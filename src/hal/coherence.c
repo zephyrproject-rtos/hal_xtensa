@@ -1,6 +1,6 @@
 /*  coherence.c - Cache coherence opt-in / opt-out functions  */
 
-/* $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/coherence.c#1 $ */
+/* $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/coherence.c#1 $ */
 
 /*
  * Copyright (c) 2008 Tensilica Inc.

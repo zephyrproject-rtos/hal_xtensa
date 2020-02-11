@@ -12,7 +12,7 @@
 // computed by xt-genldscripts for a specific LSP, e.g. by using the
 // address of the _memmap_cacheattr_reset symbol.)
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/syscache_asm.S#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/syscache_asm.S#1 $
 
 // Copyright (c) 2003-2013 Tensilica Inc.
 //

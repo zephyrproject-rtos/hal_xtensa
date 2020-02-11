@@ -16,6 +16,8 @@ libhal_a_SOURCES = \
 	misc.c \
 	mmu.c \
 	mp_asm.S \
+	mpu_asm.S \
+	mpu.c \
 	set_region_translate.c \
 	syscache_asm.S \
 	windowspill_asm.S

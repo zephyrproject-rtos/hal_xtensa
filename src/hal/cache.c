@@ -1,7 +1,7 @@
 // 
 // cache.c -- cache management routines
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/cache.c#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/cache.c#1 $
 
 // Copyright (c) 2002 Tensilica Inc.
 //
@@ -25,7 +25,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <xtensa/config/core.h>
-#include <xtensa/config/specreg.h>
 
 // size of the cache lines in log2(bytes)
 const unsigned char Xthal_icache_linewidth = XCHAL_ICACHE_LINEWIDTH;

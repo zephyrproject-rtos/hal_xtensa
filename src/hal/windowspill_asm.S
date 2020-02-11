@@ -1,7 +1,7 @@
 //
 // windowspill.S  --  register window spill routine
 //
-// $Id: //depot/rel/Eaglenest/Xtensa/OS/hal/windowspill_asm.S#1 $
+// $Id: //depot/rel/Foxhill/dot.8/Xtensa/OS/hal/windowspill_asm.S#1 $
 
 // Copyright (c) 1999-2010 Tensilica Inc.
 //
@@ -123,10 +123,10 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 	 * and the size of WINDOWSTART can be 8 or 16.
 	 */
 
-	rsr	a2, WINDOWBASE
+	rsr.windowbase	a2
 	addi	a2, a2, 1
 	ssr	a2		// sar = WINDOWBASE + 1
-	rsr	a3, WINDOWSTART
+	rsr.windowstart	a3
 	srl	a2, a3		// a2 is 0... | 000000xxxxxxxxxx = WINDOWSTART >> sar
 	sll	a3, a3		// a3 is 1yyyyy0000000000 | 0... = WINDOWSTART << (32 - sar)
 	bgez	a3, .Linvalid_ws	// verify that msbit is indeed set
@@ -152,7 +152,7 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 	nsau    a3, a3		// get index of that bit, numbered from msbit (32 if absent)
 	ssl	a3		// set sar = 32 - a3 = bit index numbered from lsbit + 1
 #else /* XCHAL_HAVE_NSA */
-	wsr	a2, WINDOWSTART	// temporarily save rotated start bits
+	wsr.windowstart	a2	// temporarily save rotated start bits
 				// (we can use WINDOWSTART because WOE=0)
 
 	//  NOTE:  this could be optimized a bit, by explicit coding rather than the macro.
@@ -160,10 +160,10 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 
 	addi	a2, a3, 1	// index+1
 	ssr	a2		// set sar = index + 1
-	rsr	a2, WINDOWSTART	// restore a2 (rotated start bits)
+	rsr.windowstart	a2	// restore a2 (rotated start bits)
 #endif /* XCHAL_HAVE_NSA */
 	srl	a2, a2		// right-justify the rotated start bits (dropping lsbit set)
-	wsr	a2, WINDOWSTART	// save rotated + justified window start bits,
+	wsr.windowstart	a2	// save rotated + justified window start bits,
 				//  because a2 will disappear when modifying WINDOWBASE
 				// again, we can use WINDOWSTART because WOE=0
 
@@ -172,18 +172,18 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 	 *  (ie. leaving us with a2 and a3 to play with, because a0 and a1
 	 *  may be those of the original window which we must preserve).
 	 */
-	rsr	a2, WINDOWBASE
+	rsr.windowbase	a2
 #if XCHAL_HAVE_NSA
 	addi	a2, a2, 31
 	sub	a3, a2, a3	// a3 = WINDOWBASE + index = WINDOWBASE + (31 - msbit_index)
 #else /* XCHAL_HAVE_NSA */
 	add	a3, a2, a3	// a3 = WINDOWBASE + index
 #endif /* XCHAL_HAVE_NSA */
-	wsr	a3, WINDOWBASE	// effectively do:  rotw index
+	wsr.windowbase	a3	// effectively do:  rotw index
 	rsync			// wait for write to WINDOWBASE to complete
 	//  Now our registers have changed!
 
-	rsr	a2, WINDOWSTART	// restore a2 (rotated + justified window start bits)
+	rsr.windowstart	a2	// restore a2 (rotated + justified window start bits)
 
 	/*
 	 *  We are now ready to start the window spill loop.
@@ -285,11 +285,11 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 
 .Ldone:
 	rotw	1		// back to the original window
-	rsr	a2, WINDOWBASE	// get (original) window base
+	rsr.windowbase	a2	// get (original) window base
 	ssl	a2		// setup for shift left by WINDOWBASE
 	movi	a2, 1
 	sll	a2, a2		// compute new WINDOWSTART = 1<<WINDOWBASE
-	wsr	a2, WINDOWSTART	// and apply it
+	wsr.windowstart	a2	// and apply it
 	rsync
 	movi	a2, 0		// done!
 	ret
@@ -317,7 +317,7 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 .Linvalid_window:
 	slli	a2, a2, 1	// space for missing start bit
 	addi	a2, a2, 1	// add missing start bit
-	rsr	a3, WINDOWBASE	// get current WINDOWBASE
+	rsr.windowbase	a3	// get current WINDOWBASE
 	bbsi.l	a2, WSBITS-1, 2f	// branch if current WINDOWBASE==original
 1:	addi	a3, a3, -1	// decrement towards original WINDOWBASE
 	slli	a2, a2, 1	// shift towards original WINDOWSTART alignment
@@ -330,11 +330,11 @@ xthal_spill_registers_into_stack_nw:	// BACKWARD COMPATIBILITY ONLY - see above
 	slli	a3, a2, 32-WSBITS	// left-justify start bits
 	src	a2, a2, a3	// rotate left by original WINDOWBASE
 	extui	a2, a2, 0, WSBITS	// keep only significant start bits
-	wsr	a2, WINDOWSTART	// we've cleared only start bits of spilled windows
-	rsr	a3, SAR		// retrieve 32 - original WINDOWBASE
+	wsr.windowstart	a2	// we've cleared only start bits of spilled windows
+	rsr.sar	a3		// retrieve 32 - original WINDOWBASE
 	movi	a2, 32
 	sub	a3, a2, a3	// restore original WINDOWBASE
-	wsr	a3, WINDOWBASE	// back to original WINDOWBASE
+	wsr.windowbase	a3	// back to original WINDOWBASE
 	rsync
 
 	movi	a2, 2		// indicate invalid window size
@@ -369,15 +369,15 @@ xthal_window_spill:
 	abi_entry
 #if XCHAL_HAVE_WINDOWED
 	movi	a6, ~(PS_WOE_MASK|PS_INTLEVEL_MASK)	// (using a6 ensures any window using this a4..a7 is spilled)
-	rsr	a5, PS
+	rsr.ps	a5
 	mov	a4, a0			 // save a0
 	and	a2, a5, a6		 // clear WOE, INTLEVEL
 	addi	a2, a2, XCHAL_EXCM_LEVEL // set INTLEVEL = XCHAL_EXCM_LEVEL
-	wsr	a2, PS			 // apply to PS
+	wsr.ps	a2			 // apply to PS
 	rsync
 	call0	xthal_window_spill_nw
 	mov	a0, a4		// restore a0
-	wsr	a5, PS		// restore PS
+	wsr.ps	a5		// restore PS
 	rsync
 #endif /* XCHAL_HAVE_WINDOWED */
 	abi_return
