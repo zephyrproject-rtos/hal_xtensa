@@ -42,8 +42,6 @@
 #endif /* XCHAL_HAVE_INTERRUPTS */
 
 
-#if defined(__SPLIT__get_intenable) || \
-    defined(__SPLIT__get_intenable_nw)
 
 //----------------------------------------------------------------------
 // Access INTENABLE register from C
@@ -61,10 +59,7 @@ DECLFUNC(xthal_get_intenable)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined(__SPLIT__set_intenable) || \
-    defined(__SPLIT__set_intenable_nw)
 
 // void xthal_set_intenable(unsigned)
 //
@@ -81,10 +76,7 @@ DECLFUNC(xthal_set_intenable)
 // Access INTERRUPT, INTSET, INTCLEAR register from C
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__get_interrupt) || \
-    defined (__SPLIT__get_interrupt_nw)
 
 // unsigned xthal_get_interrupt(void)
 //
@@ -98,10 +90,7 @@ DECLFUNC (xthal_get_interrupt)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined(__SPLIT__get_intread) || \
-    defined(__SPLIT__get_intread_nw)
 
 DECLFUNC (xthal_get_intread)
 	abi_entry
@@ -113,10 +102,7 @@ DECLFUNC (xthal_get_intread)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined(__SPLIT__set_intset) || \
-    defined(__SPLIT__set_intset_nw)
 
 // void xthal_set_intset(unsigned)
 //
@@ -128,10 +114,6 @@ DECLFUNC(xthal_set_intset)
 	abi_return
 	endfunc
 
-#endif
-
-#if defined(__SPLIT__set_intclear) || \
-    defined(__SPLIT__set_intclear_nw)
 
 // void xthal_set_intclear(unsigned)
 //
@@ -151,10 +133,7 @@ DECLFUNC(xthal_set_intclear)
 // using INTENABLE to simulate the masking that PS.INTLEVEL would do.
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__get_vpri) ||\
-    defined(__SPLIT__get_vpri_nw)
 
 // unsigned xthal_get_vpri(void);
 
@@ -169,9 +148,6 @@ DECLFUNC(xthal_get_vpri)
 	abi_return
 	endfunc
 
-#endif
-
-#if defined(__SPLIT__set_vpri_nw)
 
 // unsigned xthal_set_vpri_nw(unsigned)
 //
@@ -276,9 +252,7 @@ _SYM(xthal_set_vpri_intlevel_nw)
 
 
 
-#endif
 
-#if defined(__SPLIT__set_vpri)
 
 // unsigned  xthal_set_vpri (unsigned newvpri);
 //
@@ -377,9 +351,7 @@ DECLFUNC(xthal_set_vpri_lock)
 	endfunc
 
 
-#endif
 
-#if defined(__SPLIT__get_intpending_nw)
 
 // unsigned xthal_get_intpending_nw(void)
 //
@@ -568,10 +540,7 @@ gipfail:
 
 // -----------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__vpri_lock) || \
-    defined(__SPLIT__vpri_lock_nw)
 
 // void xthal_vpri_lock()
 //
@@ -607,10 +576,7 @@ xthal_vpri_lock_done:
 	abi_return
 	endfunc
 
-#endif
 
-#if defined(__SPLIT__vpri_unlock) || \
-    defined(__SPLIT__vpri_unlock_nw)
 
 // void xthal_vpri_unlock(void)
 //
@@ -639,5 +605,4 @@ DECLFUNC(xthal_vpri_unlock)
 	abi_return
 	endfunc
 
-#endif /*SPLIT*/
 

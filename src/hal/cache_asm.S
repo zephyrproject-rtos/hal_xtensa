@@ -180,8 +180,6 @@ xthal_icache_hugerange_\name:
 // Read CACHEATTR register
 //----------------------------------------------------------------------
 
-#if defined(__SPLIT__get_cacheattr) ||\
-    defined(__SPLIT__get_cacheattr_nw)
 
 //  unsigned xthal_get_cacheattr(void);
 
@@ -195,10 +193,7 @@ DECLFUNC(xthal_get_icacheattr)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined(__SPLIT__get_icacheattr) ||\
-    defined(__SPLIT__get_icacheattr_nw)
 
 //  unsigned xthal_get_icacheattr(void);
 
@@ -210,7 +205,6 @@ DECLFUNC(xthal_get_icacheattr)
 	endfunc
 # endif
 
-#endif /*split*/
 
 
 //----------------------------------------------------------------------
@@ -225,8 +219,6 @@ DECLFUNC(xthal_get_icacheattr)
  *	void  xthal_set_dcacheattr( unsigned new_cacheattr );
  */
 
-#if defined(__SPLIT__set_cacheattr) ||\
-	defined(__SPLIT__set_cacheattr_nw)
 
 # if XCHAL_HAVE_CACHEATTR	/* single CACHEATTR register used for both I and D accesses */
 DECLFUNC(xthal_set_icacheattr)
@@ -238,7 +230,6 @@ DECLFUNC(xthal_set_cacheattr)
 	abi_return
 	endfunc
 
-#endif /*split*/
 
 
 #if XCHAL_HAVE_CACHEATTR
@@ -255,8 +246,6 @@ DECLFUNC(xthal_set_cacheattr)
 
 #elif XCHAL_HAVE_MIMIC_CACHEATTR || XCHAL_HAVE_XLT_CACHEATTR || (XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY)
 
-# if defined(__SPLIT__set_icacheattr) \
-	 || defined(__SPLIT__set_icacheattr_nw)
 
 DECLFUNC(xthal_set_icacheattr)
 	abi_entry
@@ -265,10 +254,7 @@ DECLFUNC(xthal_set_icacheattr)
 	abi_return
 	endfunc
 
-# endif
 
-# if defined(__SPLIT__set_dcacheattr) \
-	 || defined(__SPLIT__set_dcacheattr_nw)
 
 DECLFUNC(xthal_set_dcacheattr)
 	abi_entry
@@ -276,12 +262,9 @@ DECLFUNC(xthal_set_dcacheattr)
 	abi_return
 	endfunc
 
-# endif /*split*/
 
 #else /* full MMU (pre-v3): */
 
-# if defined(__SPLIT__set_idcacheattr) \
-	 || defined(__SPLIT__set_idcacheattr_nw)
 
 //  These functions aren't applicable to arbitrary MMU configurations.
 //  Do nothing in this case.
@@ -292,7 +275,6 @@ DECLFUNC(xthal_set_dcacheattr)
 	abi_return
 	endfunc
 
-# endif /*split*/
 
 #endif /* cacheattr/MMU type */
 
@@ -309,8 +291,6 @@ DECLFUNC(xthal_set_dcacheattr)
 
 #if XCHAL_HAVE_CACHEATTR
 
-# if defined(__SPLIT__idcache_is_enabled) || \
-     defined(__SPLIT__idcache_is_enabled_nw)
 
 DECLFUNC(xthal_icache_is_enabled)
 DECLFUNC(xthal_dcache_is_enabled)
@@ -322,12 +302,9 @@ DECLFUNC(xthal_dcache_is_enabled)
 	abi_return
 	endfunc
 
-# endif /*split*/
 
 #elif XCHAL_HAVE_MIMIC_CACHEATTR || XCHAL_HAVE_XLT_CACHEATTR
 
-# if defined(__SPLIT__icache_is_enabled) || \
-     defined(__SPLIT__icache_is_enabled_nw)
 
 DECLFUNC(xthal_icache_is_enabled)
 	abi_entry
@@ -338,10 +315,7 @@ DECLFUNC(xthal_icache_is_enabled)
 	abi_return
 	endfunc
 
-# endif
 
-# if defined(__SPLIT__dcache_is_enabled) || \
-     defined(__SPLIT__dcache_is_enabled_nw)
 
 DECLFUNC(xthal_dcache_is_enabled)
 	abi_entry
@@ -352,15 +326,12 @@ DECLFUNC(xthal_dcache_is_enabled)
 	abi_return
 	endfunc
 
-# endif /*split*/
 
 #else
 
 //  These functions aren't applicable to arbitrary MMU configurations.
 //  Assume caches are enabled in this case (!).
 
-# if defined(__SPLIT__idcache_is_enabled) || \
-     defined(__SPLIT__idcache_is_enabled_nw)
 
 DECLFUNC(xthal_icache_is_enabled)
 DECLFUNC(xthal_dcache_is_enabled)
@@ -368,7 +339,6 @@ DECLFUNC(xthal_dcache_is_enabled)
 	movi	a2, 1
 	abi_return
 	endfunc
-# endif /*split*/
 
 #endif
 
@@ -378,8 +348,6 @@ DECLFUNC(xthal_dcache_is_enabled)
 // invalidate the icache
 //----------------------------------------------------------------------
 
-#if defined(__SPLIT__icache_all_invalidate) || \
-    defined(__SPLIT__icache_all_invalidate_nw)
 
 // void xthal_icache_all_invalidate(void);
 
@@ -394,10 +362,7 @@ DECLFUNC(xthal_icache_all_invalidate)
 // invalidate the dcache
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_all_invalidate) || \
-    defined(__SPLIT__dcache_all_invalidate_nw)
 
 // void xthal_dcache_all_invalidate(void);
 
@@ -411,10 +376,7 @@ DECLFUNC(xthal_dcache_all_invalidate)
 // write dcache dirty data
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_all_writeback) || \
-    defined(__SPLIT__dcache_all_writeback_nw)
 
 // void xthal_dcache_all_writeback(void);
 
@@ -428,10 +390,7 @@ DECLFUNC(xthal_dcache_all_writeback)
 // write dcache dirty data and invalidate
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_all_writeback_inv) || \
-    defined(__SPLIT__dcache_all_writeback_inv_nw)
 
 // void xthal_dcache_all_writeback_inv(void);
 
@@ -445,10 +404,7 @@ DECLFUNC(xthal_dcache_all_writeback_inv)
 // unlock instructions from icache
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_all_unlock) || \
-    defined(__SPLIT__icache_all_unlock_nw)
 
 // void xthal_icache_all_unlock(void);
 
@@ -462,10 +418,7 @@ DECLFUNC(xthal_icache_all_unlock)
 // unlock data from dcache
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_all_unlock) || \
-    defined(__SPLIT__dcache_all_unlock_nw)
 
 // void xthal_dcache_all_unlock(void);
 
@@ -479,10 +432,7 @@ DECLFUNC(xthal_dcache_all_unlock)
 // invalidate the address range in the icache
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_region_invalidate) || \
-    defined(__SPLIT__icache_region_invalidate_nw)
 
 // void xthal_icache_region_invalidate( void *addr, unsigned size );
 
@@ -493,48 +443,36 @@ DECLFUNC(xthal_icache_region_invalidate)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined(__SPLIT__icache_hugerange_invalidate)
 
 // void xthal_icache_hugerange_invalidate( void *addr, unsigned size );
 icache_hugefunc	invalidate,	ihi
 
-#endif
 
-#if defined(__SPLIT__icache_hugerange_unlock)
 
 # if XCHAL_ICACHE_LINE_LOCKABLE
 // void xthal_icache_hugerange_unlock( void *addr, unsigned size );
 icache_hugefunc	unlock,		ihu
 # endif
 
-#endif
 
-#if defined(__SPLIT__dcache_hugerange_invalidate)
 
 // void xthal_dcache_hugerange_invalidate( void *addr, unsigned size );
 dcache_hugefunc	invalidate,	dhi
 
-#endif
 
-#if defined(__SPLIT__dcache_hugerange_unlock)
 
 # if XCHAL_DCACHE_LINE_LOCKABLE
 // void xthal_dcache_hugerange_unlock( void *addr, unsigned size );
 dcache_hugefunc	unlock,		dhu
 # endif
 
-#endif
 
-#if defined(__SPLIT__dcache_hugerange_writeback)
 
 // void xthal_dcache_hugerange_writeback( void *addr, unsigned size );
 dcache_hugefunc	writeback,	dhwb
 
-#endif
 
-#if defined(__SPLIT__dcache_hugerange_writeback_inv)
 
 // void xthal_dcache_hugerange_writeback_inv( void *addr, unsigned size );
 dcache_hugefunc	writeback_inv,	dhwbi
@@ -545,10 +483,7 @@ dcache_hugefunc	writeback_inv,	dhwbi
 // invalidate the address range in the dcache
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_region_invalidate) || \
-    defined(__SPLIT__dcache_region_invalidate_nw)
 
 // void xthal_dcache_region_invalidate( void *addr, unsigned size );
 
@@ -562,10 +497,7 @@ DECLFUNC(xthal_dcache_region_invalidate)
 // write dcache region dirty data
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_region_writeback) || \
-    defined(__SPLIT__dcache_region_writeback_nw)
 
 // void xthal_dcache_region_writeback( void *addr, unsigned size );
 
@@ -579,10 +511,7 @@ DECLFUNC(xthal_dcache_region_writeback)
 // write dcache region dirty data and invalidate
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_region_writeback_inv) || \
-	defined(__SPLIT__dcache_region_writeback_inv_nw)
 
 // void xthal_dcache_region_writeback_inv( void *addr, unsigned size );
 
@@ -596,10 +525,7 @@ DECLFUNC(xthal_dcache_region_writeback_inv)
 // lock instructions in icache region
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_region_lock) || \
-	defined(__SPLIT__icache_region_lock_nw)
 
 // void xthal_icache_region_lock(void);
 
@@ -613,10 +539,7 @@ DECLFUNC(xthal_icache_region_lock)
 // lock data in dcache region
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_region_lock) || \
-	defined(__SPLIT__dcache_region_lock_nw)
 
 // void xthal_dcache_region_lock(void);
 
@@ -630,10 +553,7 @@ DECLFUNC(xthal_dcache_region_lock)
 // unlock instructions from icache region
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_region_unlock) || \
-	defined(__SPLIT__icache_region_unlock_nw)
 
 // void xthal_icache_region_unlock(void);
 
@@ -647,10 +567,7 @@ DECLFUNC(xthal_icache_region_unlock)
 // unlock data from dcache region
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_region_unlock) || \
-	defined(__SPLIT__dcache_region_unlock_nw)
 
 // void xthal_dcache_region_unlock(void);
 
@@ -665,10 +582,7 @@ DECLFUNC(xthal_dcache_region_unlock)
 // invalidate single icache line
 //----------------------------------------------------------------------
 
-#endif
 
-#if	defined(__SPLIT__icache_line_invalidate) || \
-	defined(__SPLIT__icache_line_invalidate_nw)
 
 // void xthal_icache_line_invalidate(void *addr);
 
@@ -684,10 +598,7 @@ DECLFUNC(xthal_icache_line_invalidate)
 // invalidate single dcache line
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_line_invalidate) || \
-	defined(__SPLIT__dcache_line_invalidate_nw)
 
 // void xthal_dcache_line_invalidate(void *addr);
 
@@ -701,10 +612,7 @@ DECLFUNC(xthal_dcache_line_invalidate)
 // write single dcache line dirty data
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_line_writeback) || \
-	defined(__SPLIT__dcache_line_writeback_nw)
 
 // void xthal_dcache_line_writeback(void *addr);
 
@@ -718,10 +626,7 @@ DECLFUNC(xthal_dcache_line_writeback)
 // write single dcache line dirty data and invalidate
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_line_writeback_inv) || \
-	defined(__SPLIT__dcache_line_writeback_inv_nw)
 
 // void xthal_dcache_line_writeback_inv(void *addr);
 
@@ -735,10 +640,7 @@ DECLFUNC(xthal_dcache_line_writeback_inv)
 // lock instructions in icache line
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_line_lock) || \
-	defined(__SPLIT__icache_line_lock_nw)
 
 // void xthal_icache_line_lock(void);
 
@@ -752,10 +654,7 @@ DECLFUNC(xthal_icache_line_lock)
 // lock data in dcache line
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_line_lock) || \
-	defined(__SPLIT__dcache_line_lock_nw)
 
 // void xthal_dcache_line_lock(void);
 
@@ -769,10 +668,7 @@ DECLFUNC(xthal_dcache_line_lock)
 // unlock instructions from icache line
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_line_unlock) || \
-	defined(__SPLIT__icache_line_unlock_nw)
 
 // void xthal_icache_line_unlock(void);
 
@@ -786,10 +682,7 @@ DECLFUNC(xthal_icache_line_unlock)
 // unlock data from dcache line
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_line_unlock) || \
-	defined(__SPLIT__dcache_line_unlock_nw)
 
 // void xthal_dcache_line_unlock(void);
 
@@ -803,10 +696,7 @@ DECLFUNC(xthal_dcache_line_unlock)
 // sync icache and memory (???)
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__icache_sync) || \
-	defined(__SPLIT__icache_sync_nw)
 
 // void xthal_icache_sync(void);
 
@@ -821,10 +711,7 @@ DECLFUNC(xthal_icache_sync)
 // sync dcache and memory (???)
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__dcache_sync) || \
-	defined(__SPLIT__dcache_sync_nw)
 
 // void xthal_dcache_sync(void);
 
@@ -838,10 +725,7 @@ DECLFUNC(xthal_dcache_sync)
 // Get/Set icache number of ways enabled
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined (__SPLIT__icache_get_ways) || \
-	defined (__SPLIT__icache_get_ways_nw)
 
 // unsigned int xthal_icache_get_ways(void);
 
@@ -851,10 +735,7 @@ DECLFUNC(xthal_icache_get_ways)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined (__SPLIT__icache_set_ways) || \
-	defined(__SPLIT__icache_set_ways_nw)
 
 /// void xthal_icache_set_ways(unsigned int ways);
 
@@ -868,10 +749,7 @@ DECLFUNC(xthal_icache_set_ways)
 // Get/Set dcache number of ways enabled
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined (__SPLIT__dcache_get_ways) || \
-	defined (__SPLIT__dcache_get_ways_nw)
 
 // unsigned int xthal_dcache_get_ways(void);
 
@@ -881,10 +759,7 @@ DECLFUNC(xthal_dcache_get_ways)
 	abi_return
 	endfunc
 
-#endif
 
-#if defined (__SPLIT__dcache_set_ways) || \
-	defined (__SPLIT__dcache_set_ways_nw)
 
 // void xthal_dcache_set_ways(unsigned int ways);
 
@@ -898,10 +773,7 @@ DECLFUNC(xthal_dcache_set_ways)
 // opt into and out of coherence
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__cache_coherence_on) || \
-	defined(__SPLIT__cache_coherence_on_nw)
 
 // The opt-in routine assumes cache was initialized at reset,
 // so it's equivalent to the low-level coherence_on routine.
@@ -916,10 +788,7 @@ DECLFUNC(xthal_cache_coherence_on)
 	abi_return
 	endfunc
 	
-#endif
 
-#if defined(__SPLIT__cache_coherence_off) || \
-	defined(__SPLIT__cache_coherence_off_nw)
 
 // The coherence_off routines should not normally be called directly.
 // Use the xthal_cache_coherence_optout() C routine instead
@@ -938,10 +807,7 @@ DECLFUNC(xthal_cache_coherence_off)
 // Control cache prefetch
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__set_cache_prefetch_long) || \
-	defined(__SPLIT__set_cache_prefetch_long_nw)
 
 # if XCHAL_HAVE_BE
 #  define aH a2	/* msb word = prefctl mask */
@@ -988,10 +854,7 @@ DECLFUNC(xthal_set_cache_prefetch_long)
 
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__set_cache_prefetch) || \
-	defined(__SPLIT__set_cache_prefetch_nw)
 
 // FOR BACKWARD COMPATIBILITY WITH PRE-RF RELEASE OBJECT CODE ONLY.
 // Set cache prefetch state (-1=enable, 0=disable, and see the
@@ -1026,10 +889,7 @@ DECLFUNC(xthal_set_cache_prefetch)
 
 //----------------------------------------------------------------------
 
-#endif
 
-#if defined(__SPLIT__get_cache_prefetch) ||\
-	defined(__SPLIT__get_cache_prefetch_nw)
 
 // Return current cache prefetch state.
 // int  xthal_get_cache_prefetch( void )
@@ -1046,25 +906,16 @@ DECLFUNC(xthal_get_cache_prefetch)
 //----------------------------------------------------------------------
 // Misc configuration info
 //----------------------------------------------------------------------
-#endif
 
 // Eventually these will move to their own file:
-#if defined(__SPLIT__hw_configid0)
 	.set	xthals_hw_configid0, XCHAL_HW_CONFIGID0
-#endif
 
-#if defined(__SPLIT__hw_configid1)
 	.set	xthals_hw_configid1, XCHAL_HW_CONFIGID1
-#endif
 
-#if defined(__SPLIT__release_major)
 	.set	xthals_release_major, XTHAL_RELEASE_MAJOR
-#endif
 
-#if defined(__SPLIT__release_minor)
 	.set	xthals_release_minor, XTHAL_RELEASE_MINOR
 
-#endif /*split*/
 
 	.global	xthals_hw_configid0, xthals_hw_configid1
 	.global	xthals_release_major, xthals_release_minor

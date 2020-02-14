@@ -72,7 +72,6 @@
 //  Inject errors into instruction and/or data RAMs, or cache data or tags
 //------------------------------------------------------------------------
 
-#if defined(__SPLIT__memep_inject_error)
 
 // void xthal_memep_inject_error(void *addr, int size, int flags);
 // where:
@@ -279,7 +278,6 @@ SYMBOL(xthal_memep_inject_error)
 	.size	xthal_memep_inject_error, . - xthal_memep_inject_error
 
 
-#endif /*split*/
 
 //----------------------------------------------------------------------
 
