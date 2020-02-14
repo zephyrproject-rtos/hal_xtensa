@@ -1,0 +1,21 @@
+General Notes for Cadence/Tensillica HAL Updates
+================================================
+
+The xtensa HAL is supplied by Cadence/Tensillica and is indended to support all
+xtensa ISA configurations used by different devices.
+
+Zephyr needs certain HAL modifications for ease of management for use within
+Zephyr and these changes need to be applied to any HAL updates from Cadence.
+
+1) Remove usage of __SPLIT__ from HAL build.
+--------------------------------------------
+
+The HAL build script creates individual source files per functions by defining
+__SPLIT_* macros and including corresponding source files, in an attempt to
+compile one function per file. These should be removed. See
+84ff6039fc8f435551bb7915e098184c95fa24f2 and
+16324fd861596f57517524cd9d6fc66b077db4e8.
+
+
+This file should be updated accordingly to reflect any new changes required
+in new HALs.
