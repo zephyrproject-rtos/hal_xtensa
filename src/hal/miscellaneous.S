@@ -39,8 +39,6 @@
 // System Software Reference Manual for details on the use of this function.
 //----------------------------------------------------------------------
 
-#if defined(__SPLIT__clear_regcached_code) || \
-    defined(__SPLIT__clear_regcached_code_nw)
 
 DECLFUNC(xthal_clear_regcached_code)
 	abi_entry
@@ -52,5 +50,4 @@ DECLFUNC(xthal_clear_regcached_code)
 	abi_return
 	endfunc
 
-#endif
 
