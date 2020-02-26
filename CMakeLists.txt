@@ -5,7 +5,7 @@ if(CONFIG_XTENSA_HAL)
   target_include_directories(XTENSA_HAL INTERFACE include)
   target_include_directories(XTENSA_HAL INTERFACE zephyr/soc/${SOC_NAME}/)
 
-  zephyr_library()
+  zephyr_library_named(modules_xtensa_hal)
 
   zephyr_include_directories(
     include
