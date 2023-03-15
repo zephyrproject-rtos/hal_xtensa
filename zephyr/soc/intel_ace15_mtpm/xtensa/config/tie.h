@@ -8,7 +8,7 @@
    that extend basic Xtensa core functionality.  It is customized to this
    Xtensa processor configuration.
 
-   Customer ID=10631; Build=0x863b0; Copyright (c) 1999-2019 Cadence Design Systems Inc.
+   Copyright (c) 1999-2022 Cadence Design Systems Inc.
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the
@@ -29,8 +29,10 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
-#ifndef _XTENSA_CORE_TIE_H
-#define _XTENSA_CORE_TIE_H
+#ifndef XTENSA_CORE_TIE_H
+#define XTENSA_CORE_TIE_H
+
+/* parasoft-begin-suppress ALL "This file not MISRA checked." */
 
 #define XCHAL_CP_NUM			1	/* number of coprocessors */
 #define XCHAL_CP_MAX			2	/* max CP ID + 1 (0 if none) */
@@ -184,5 +186,7 @@
 	3,3,3,3,3,3,3,3,2,2,2,2,2,2,6,11, 3,3,3,3,3,3,3,3,2,2,2,2,2,2,6,11,\
 	3,3,3,3,3,3,3,3,2,2,2,2,2,2,6,3, 3,3,3,3,3,3,3,3,2,2,2,2,2,2,6,11
 
-#endif /*_XTENSA_CORE_TIE_H*/
+/* parasoft-end-suppress ALL "This file not MISRA checked." */
+
+#endif /* XTENSA_CORE_TIE_H */
 

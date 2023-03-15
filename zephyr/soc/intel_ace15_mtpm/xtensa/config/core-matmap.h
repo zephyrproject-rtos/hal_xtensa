@@ -22,7 +22,7 @@
  *	XCHAL_HW_VERSION_MINOR
  */
 
-/* Customer ID=10631; Build=0x863b0; Copyright (c) 1999-2019 Tensilica Inc.
+/* Copyright (c) 1999-2022 Tensilica Inc.
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the
@@ -104,6 +104,7 @@
 				XTHAL_SAM_EXCEPTION	XCHAL_SEP \
 				XTHAL_SAM_EXCEPTION
 
+/*  The following defines are deprecated. DO NOT USE.  */
 #define XCHAL_CA_R   (0xC0 | 0x40000000)
 #define XCHAL_CA_RX  (0xD0 | 0x40000000)
 #define XCHAL_CA_RW  (0xE0 | 0x40000000)
