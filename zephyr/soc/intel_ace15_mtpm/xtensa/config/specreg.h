@@ -2,9 +2,9 @@
  * Xtensa Special Register symbolic names
  */
 
-/* $Id: //depot/rel/Homewood/ib.10/Xtensa/SWConfig/hal/specreg.h.tpp#1 $ */
+/* $Id: //depot/rel/Foxhill/dot.12/Xtensa/SWConfig/hal/specreg.h.tpp#1 $ */
 
-/* Copyright (c) 1998-2002 Tensilica Inc.
+/* Customer ID=10631; Build=0x863b0; Copyright (c) 1998-2002 Tensilica Inc.
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the
@@ -80,7 +80,6 @@
 #define ICOUNTLEVEL	237
 #define EXCVADDR	238
 #define CCOMPARE_0	240
-
 
 /*  Special cases (bases of special register series):  */
 #define IBREAKA		128
