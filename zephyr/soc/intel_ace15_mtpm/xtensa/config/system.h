@@ -10,7 +10,7 @@
  *  core-specific but system independent.
  */
 
-/* Copyright (c) 2000-2010 Tensilica Inc.
+/* Customer ID=10631; Build=0x863b0; Copyright (c) 2000-2010 Tensilica Inc.
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the
@@ -35,6 +35,9 @@
 #ifndef XTENSA_CONFIG_SYSTEM_H
 #define XTENSA_CONFIG_SYSTEM_H
 
+/*#include <xtensa/hal.h>*/
+
+
 
 /*----------------------------------------------------------------------
 				CONFIGURED SOFTWARE OPTIONS
@@ -47,18 +50,28 @@
 /*  The above maps to one of the following constants:  */
 #define XTHAL_ABI_WINDOWED		0
 #define XTHAL_ABI_CALL0			1
+/*  Alternatives:  */
+/*#define XSHAL_WINDOWED_ABI		1*/	/* set if windowed ABI selected */
+/*#define XSHAL_CALL0_ABI		0*/	/* set if call0 ABI selected */
 
 #define XSHAL_CLIB			XTHAL_CLIB_NEWLIB	/* (sw-only option, selected C library) */
 /*  The above maps to one of the following constants:  */
 #define XTHAL_CLIB_NEWLIB		0
 #define XTHAL_CLIB_UCLIBC		1
 #define XTHAL_CLIB_XCLIB		2
+/*  Alternatives:  */
+/*#define XSHAL_NEWLIB			1*/	/* set if newlib C library selected */
+/*#define XSHAL_UCLIBC			0*/	/* set if uCLibC C library selected */
+/*#define XSHAL_XCLIB			0*/	/* set if Xtensa C library selected */
 
 #define XSHAL_USE_FLOATING_POINT	1
 
-#define XSHAL_FLOATING_POINT_ABI        1
+#define XSHAL_FLOATING_POINT_ABI	1
 
 /*  SW workarounds enabled for HW errata:  */
+
+/*  SW options for functional safety:  */
+#define XSHAL_FUNC_SAFETY_ENABLED	0
 
 /*----------------------------------------------------------------------
 				DEVICE ADDRESSES
@@ -76,8 +89,8 @@
 #define XSHAL_IOBLOCK_CACHED_PADDR	0x70000000
 #define XSHAL_IOBLOCK_CACHED_SIZE	0x0E000000
 
-#define XSHAL_IOBLOCK_BYPASS_VADDR	0x90000000
-#define XSHAL_IOBLOCK_BYPASS_PADDR	0x90000000
+#define XSHAL_IOBLOCK_BYPASS_VADDR	0x50000000
+#define XSHAL_IOBLOCK_BYPASS_PADDR	0x50000000
 #define XSHAL_IOBLOCK_BYPASS_SIZE	0x0E000000
 
 /*  System ROM:  */
@@ -112,6 +125,8 @@
 #define XSHAL_RAM_BYPASS_PSIZE		0x01000000
 
 /*  Alternate system RAM (different device than system RAM):  */
+/*#define XSHAL_ALTRAM_[VP]ADDR		...not configured...*/
+/*#define XSHAL_ALTRAM_SIZE		...not configured...*/
 
 /*  Some available location in which to place devices in a simulation (eg. XTMP):  */
 #define XSHAL_SIMIO_CACHED_VADDR	0xC0000000
@@ -124,7 +139,6 @@
  *  For use by reference testbench exit and diagnostic routines.
  */
 #define XSHAL_MAGIC_EXIT		0xc0000000
-#define XSHAL_STL_INFO_LOCATION		0x3ffffffc
 
 /*----------------------------------------------------------------------
  *			DEVICE-ADDRESS DEPENDENT...
@@ -200,10 +214,10 @@
  *  of whether the macro is _WRITEBACK vs. _BYPASS etc.  */
 
 /*  These set any 512MB region unused on the XT2000 to ILLEGAL attribute:  */
-#define XSHAL_XT2000_CACHEATTR_WRITEBACK	0x4F424F24	/* enable caches in write-back mode */
-#define XSHAL_XT2000_CACHEATTR_WRITEALLOC	0x1F121F21	/* enable caches in write-allocate mode */
-#define XSHAL_XT2000_CACHEATTR_WRITETHRU	0x1F121F21	/* enable caches in write-through mode */
-#define XSHAL_XT2000_CACHEATTR_BYPASS		0x2F222F22	/* disable caches in bypass mode */
+#define XSHAL_XT2000_CACHEATTR_WRITEBACK	0x4F4F4224	/* enable caches in write-back mode */
+#define XSHAL_XT2000_CACHEATTR_WRITEALLOC	0x1F1F1221	/* enable caches in write-allocate mode */
+#define XSHAL_XT2000_CACHEATTR_WRITETHRU	0x1F1F1221	/* enable caches in write-through mode */
+#define XSHAL_XT2000_CACHEATTR_BYPASS		0x2F2F2222	/* disable caches in bypass mode */
 #define XSHAL_XT2000_CACHEATTR_DEFAULT		XSHAL_XT2000_CACHEATTR_WRITEBACK	/* default setting to enable caches */
 
 #define XSHAL_XT2000_PIPE_REGIONS	0x00000000	/* BusInt pipeline regions */
@@ -214,7 +228,7 @@
 				VECTOR INFO AND SIZES
   ----------------------------------------------------------------------*/
 
-#define XSHAL_VECTORS_PACKED		0	/* UNUSED */
+#define XSHAL_VECTORS_PACKED		0
 #define XSHAL_STATIC_VECTOR_SELECT	0
 #define XSHAL_RESET_VECTOR_VADDR	0x1FF80000
 #define XSHAL_RESET_VECTOR_PADDR	0x1FF80000
@@ -253,6 +267,7 @@
 #define XSHAL_NMI_VECTOR_SIZE	0x00000038
 #define XSHAL_NMI_VECTOR_ISROM	0
 #define XSHAL_INTLEVEL5_VECTOR_SIZE	XSHAL_NMI_VECTOR_SIZE
+
 
 #endif /*XTENSA_CONFIG_SYSTEM_H*/
 
