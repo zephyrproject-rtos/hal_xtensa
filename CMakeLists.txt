@@ -3,14 +3,28 @@ if(CONFIG_XTENSA_HAL)
   zephyr_interface_library_named(XTENSA_HAL)
 
   target_include_directories(XTENSA_HAL INTERFACE include)
-  target_include_directories(XTENSA_HAL INTERFACE zephyr/soc/${SOC_NAME}/)
+
+  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME})
+    target_include_directories(XTENSA_HAL INTERFACE
+                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME}/)
+  elseif(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME})
+    target_include_directories(XTENSA_HAL INTERFACE
+                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME}/)
+  endif()
 
   zephyr_library_named(modules_xtensa_hal)
 
   zephyr_include_directories(
     include
-    zephyr/soc/${SOC_NAME}/
     )
+
+  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME})
+    zephyr_include_directories(XTENSA_HAL INTERFACE
+                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME}/)
+  elseif(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME})
+    zephyr_include_directories(XTENSA_HAL INTERFACE
+                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME}/)
+  endif()
 
   zephyr_library_sources(
     src/hal/attribute.c
