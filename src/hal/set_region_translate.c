@@ -204,7 +204,7 @@ int xthal_v2p(void* vaddr, void** paddr, unsigned *way, unsigned* cattr) {
 			*way = iway;
 		if (paddr || cattr) {
 			unsigned temp;
-			unsigned ppn;
+			unsigned ppn = 0;
 			unsigned ppn1;
 			unsigned dtlbcfg = read_dtlbcfg();
 			temp = read_dtlb1_entry(probe);
