@@ -164,7 +164,7 @@
 	ae_s64.i	aed0, \ptr, .Lxchal_ofs_+40
 	ae_s64.i	aed1, \ptr, .Lxchal_ofs_+48
 	ae_s64.i	aed2, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_s64.i	aed3, \ptr, .Lxchal_ofs_+0
 	ae_s64.i	aed4, \ptr, .Lxchal_ofs_+8
 	ae_s64.i	aed5, \ptr, .Lxchal_ofs_+16
@@ -173,7 +173,7 @@
 	ae_s64.i	aed8, \ptr, .Lxchal_ofs_+40
 	ae_s64.i	aed9, \ptr, .Lxchal_ofs_+48
 	ae_s64.i	aed10, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_s64.i	aed11, \ptr, .Lxchal_ofs_+0
 	ae_s64.i	aed12, \ptr, .Lxchal_ofs_+8
 	ae_s64.i	aed13, \ptr, .Lxchal_ofs_+16
@@ -189,10 +189,10 @@
 	s8i	\at1, \ptr, .Lxchal_ofs_+43
 	ae_salign64.i	u0, \ptr, .Lxchal_ofs_+48
 	ae_salign64.i	u1, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_salign64.i	u2, \ptr, .Lxchal_ofs_+0
 	ae_salign64.i	u3, \ptr, .Lxchal_ofs_+8
-	addi.a	\ptr, \ptr, -192
+	addi	\ptr, \ptr, -192
 	ae_movvfcrfsr	aed0		// ureg FCR_FSR
 	ae_s64.i	aed0, \ptr, .Lxchal_ofs_+0 + 0
 	rur.ae_ovf_sar	\at1		// ureg 240
@@ -254,7 +254,7 @@
 	ae_l64.i	aed0, \ptr, .Lxchal_ofs_+40
 	ae_l64.i	aed1, \ptr, .Lxchal_ofs_+48
 	ae_l64.i	aed2, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_l64.i	aed3, \ptr, .Lxchal_ofs_+0
 	ae_l64.i	aed4, \ptr, .Lxchal_ofs_+8
 	ae_l64.i	aed5, \ptr, .Lxchal_ofs_+16
@@ -263,13 +263,13 @@
 	ae_l64.i	aed8, \ptr, .Lxchal_ofs_+40
 	ae_l64.i	aed9, \ptr, .Lxchal_ofs_+48
 	ae_l64.i	aed10, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_l64.i	aed11, \ptr, .Lxchal_ofs_+0
 	ae_l64.i	aed12, \ptr, .Lxchal_ofs_+8
 	ae_l64.i	aed13, \ptr, .Lxchal_ofs_+16
 	ae_l64.i	aed14, \ptr, .Lxchal_ofs_+24
 	ae_l64.i	aed15, \ptr, .Lxchal_ofs_+32
-	addi.a	\ptr, \ptr, 40
+	addi	\ptr, \ptr, 40
 	l8ui	\at1, \ptr, .Lxchal_ofs_+0
 	ae_movea	aep0, \at1
 	l8ui	\at1, \ptr, .Lxchal_ofs_+1
@@ -278,7 +278,7 @@
 	ae_movea	aep2, \at1
 	l8ui	\at1, \ptr, .Lxchal_ofs_+3
 	ae_movea	aep3, \at1
-	addi.a	\ptr, \ptr, 8
+	addi	\ptr, \ptr, 8
 	ae_lalign64.i	u0, \ptr, .Lxchal_ofs_+0
 	ae_lalign64.i	u1, \ptr, .Lxchal_ofs_+8
 	ae_lalign64.i	u2, \ptr, .Lxchal_ofs_+16
