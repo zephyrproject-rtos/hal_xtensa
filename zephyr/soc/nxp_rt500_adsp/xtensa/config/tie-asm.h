@@ -209,7 +209,7 @@
 	ae_s64.i	aed1, \ptr, .Lxchal_ofs_+40
 	ae_s64.i	aed2, \ptr, .Lxchal_ofs_+48
 	ae_s64.i	aed3, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_s64.i	aed4, \ptr, .Lxchal_ofs_+0
 	ae_s64.i	aed5, \ptr, .Lxchal_ofs_+8
 	ae_s64.i	aed6, \ptr, .Lxchal_ofs_+16
@@ -218,12 +218,12 @@
 	ae_s64.i	aed9, \ptr, .Lxchal_ofs_+40
 	ae_s64.i	aed10, \ptr, .Lxchal_ofs_+48
 	ae_s64.i	aed11, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_salign64.i	u0, \ptr, .Lxchal_ofs_+0
 	ae_salign64.i	u1, \ptr, .Lxchal_ofs_+8
 	ae_salign64.i	u2, \ptr, .Lxchal_ofs_+16
 	ae_salign64.i	u3, \ptr, .Lxchal_ofs_+24
-	addi.a	\ptr, \ptr, -128
+	addi	\ptr, \ptr, -128
 	ae_movvfusionmisc	aed0		// ureg FUSIONMISC
 	ae_s64.i	aed0, \ptr, .Lxchal_ofs_+0 + 0
 	ae_movvcirc	aed0		// ureg CIRC
@@ -266,7 +266,7 @@
 	ae_l64.i	aed1, \ptr, .Lxchal_ofs_+40
 	ae_l64.i	aed2, \ptr, .Lxchal_ofs_+48
 	ae_l64.i	aed3, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_l64.i	aed4, \ptr, .Lxchal_ofs_+0
 	ae_l64.i	aed5, \ptr, .Lxchal_ofs_+8
 	ae_l64.i	aed6, \ptr, .Lxchal_ofs_+16
@@ -275,7 +275,7 @@
 	ae_l64.i	aed9, \ptr, .Lxchal_ofs_+40
 	ae_l64.i	aed10, \ptr, .Lxchal_ofs_+48
 	ae_l64.i	aed11, \ptr, .Lxchal_ofs_+56
-	addi.a	\ptr, \ptr, 64
+	addi	\ptr, \ptr, 64
 	ae_lalign64.i	u0, \ptr, .Lxchal_ofs_+0
 	ae_lalign64.i	u1, \ptr, .Lxchal_ofs_+8
 	ae_lalign64.i	u2, \ptr, .Lxchal_ofs_+16
