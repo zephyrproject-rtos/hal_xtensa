@@ -1,3 +1,14 @@
+/* Added by Zephyr: recent Cadence headers want UINT32_C, but don't
+ * include stdint.h (and the toolchain stdint.h isn't asm-compatible
+ * anyway
+ */
+#ifndef UINT32_C
+#ifdef _ASMLANGUAGE
+#define UINT32_C(x) x
+#else
+#define UINT32_C(x) x##UL
+#endif
+#endif
 /* 
  * xtensa/config/core.h -- HAL definitions dependent on CORE configuration
  *
@@ -1779,7 +1790,7 @@
 	/*  If necessary, adjust \ptr to bring .Lxchal_ofs_ in acceptable range:  */
 	.if (((\maxofs) - .Lxchal_ofs_) & 0xC0000000) | ((.Lxchal_ofs_ - (\minofs)) & 0xC0000000) | (.Lxchal_ofs_ & (\ofsalign-1))
 	 .set	.Ligmask, 0xFFFFFFFF
-	 addi.a	\ptr, \ptr, (.Lxchal_ofs_ & .Ligmask)
+	 addi	\ptr, \ptr, (.Lxchal_ofs_ & .Ligmask)
 	 .set	.Lxchal_pofs_, .Lxchal_pofs_ + (.Lxchal_ofs_ & .Ligmask)
 	 .set	.Lxchal_ofs_, (.Lxchal_ofs_ & ~.Ligmask)
 	.endif
@@ -1801,7 +1812,7 @@
 	/*  Invoke this after xchal_XXX_{load,store} macros to restore \ptr.  */
 	.macro	xchal_sa_ptr_restore	ptr
 	.if .Lxchal_pofs_
-	 addi.a	\ptr, \ptr, - .Lxchal_pofs_
+	 addi	\ptr, \ptr, - .Lxchal_pofs_
 	 .set	.Lxchal_ofs_, .Lxchal_ofs_ + .Lxchal_pofs_
 	 .set	.Lxchal_pofs_, 0
 	.endif

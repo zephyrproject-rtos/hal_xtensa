@@ -1,3 +1,14 @@
+/* Added by Zephyr: recent Cadence headers want UINT32_C, but don't
+ * include stdint.h (and the toolchain stdint.h isn't asm-compatible
+ * anyway
+ */
+#ifndef UINT32_C
+#ifdef _ASMLANGUAGE
+#define UINT32_C(x) x
+#else
+#define UINT32_C(x) x##UL
+#endif
+#endif
 /* 
  * tie.h -- compile-time HAL definitions dependent on CORE & TIE configuration
  *
