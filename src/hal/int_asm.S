@@ -149,6 +149,7 @@ DECLFUNC(xthal_get_vpri)
 	endfunc
 
 
+#if !__XTENSA_CALL0_ABI__
 // unsigned xthal_set_vpri_nw(unsigned)
 //
 //  Must be called at PS.INTLEVEL <= 1.
@@ -250,6 +251,7 @@ _SYM(xthal_set_vpri_intlevel_nw)
 	j	xthal_set_vpri_nw_common	// set vpri to a2
 	endfunc
 
+#endif /* !__XTENSA_CALL0_ABI__ */
 
 
 
