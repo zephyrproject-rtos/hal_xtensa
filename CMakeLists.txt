@@ -4,9 +4,9 @@ if(CONFIG_XTENSA_HAL)
 
   target_include_directories(XTENSA_HAL INTERFACE include)
 
-  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME})
+  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${CONFIG_SOC})
     target_include_directories(XTENSA_HAL INTERFACE
-                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME}/)
+                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${CONFIG_SOC}/)
   elseif(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME})
     target_include_directories(XTENSA_HAL INTERFACE
                                ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME}/)
@@ -18,9 +18,9 @@ if(CONFIG_XTENSA_HAL)
     include
     )
 
-  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME})
+  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${CONFIG_SOC})
     zephyr_include_directories(XTENSA_HAL INTERFACE
-                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_NAME}/)
+                               ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${CONFIG_SOC}/)
   elseif(EXISTS ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME})
     zephyr_include_directories(XTENSA_HAL INTERFACE
                                ${CMAKE_CURRENT_LIST_DIR}/zephyr/soc/${SOC_TOOLCHAIN_NAME}/)
